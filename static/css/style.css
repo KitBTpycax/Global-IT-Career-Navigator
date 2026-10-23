@@ -1,13 +1,3 @@
-/**
- * Global IT Career Navigator - Custom Style Sheet
- * Theme: Deep Graphite & Noble Cherry / Crimson Red
- * Custom high-end interactive range sliders, animations, and tactile UI components.
- */
-
-/* ==============================================================================
-   1. Глобальні стилі та фон у шляхетному графітовому тоні
-   ============================================================================== */
-
 :root {
     --graphite-bg: #0b0d12;
     --graphite-surface: #12151e;
@@ -34,16 +24,11 @@ body {
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
-/* ==============================================================================
-   2. Кастомні круті повзунки (Custom Noble Cherry Range Sliders)
-   ============================================================================== */
-
 .custom-range-wrapper {
     position: relative;
     padding: 4px 0 10px 0;
 }
 
-/* Базовий трек повзунка */
 input[type=range].noble-slider {
     -webkit-appearance: none;
     appearance: none;
@@ -59,7 +44,6 @@ input[type=range].noble-slider {
     transition: background 0.12s ease;
 }
 
-/* Ковзаючий вишневий бігунок для WebKit (Chrome, Safari, Edge) */
 input[type=range].noble-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
@@ -95,7 +79,6 @@ input[type=range].noble-slider:active::-webkit-slider-thumb {
         0 0 26px rgba(225, 29, 72, 0.75);
 }
 
-/* Ковзаючий бігунок для Firefox */
 input[type=range].noble-slider::-moz-range-thumb {
     width: 22px;
     height: 22px;
@@ -119,7 +102,6 @@ input[type=range].noble-slider:active::-moz-range-thumb {
     transform: scale(1.32);
 }
 
-/* Сітка мікро-насічок (1..10) під кожним повзунком */
 .slider-ticks-row {
     display: flex;
     justify-content: space-between;
@@ -157,10 +139,6 @@ input[type=range].noble-slider:active::-moz-range-thumb {
     transform: scale(1.3);
 }
 
-/* ==============================================================================
-   3. Анімовані бейджі значень (Value Counter Badge Pop)
-   ============================================================================== */
-
 .noble-val-badge {
     display: inline-flex;
     align-items: center;
@@ -173,10 +151,6 @@ input[type=range].noble-slider:active::-moz-range-thumb {
     border-color: #e11d48 !important;
     box-shadow: 0 0 14px rgba(225, 29, 72, 0.45);
 }
-
-/* ==============================================================================
-   4. Картки та шляхетні вишневі акценти
-   ============================================================================== */
 
 .card-noble {
     background: linear-gradient(180deg, rgba(22, 26, 36, 0.95) 0%, rgba(18, 21, 30, 0.95) 100%);
@@ -200,7 +174,6 @@ input[type=range].noble-slider:active::-moz-range-thumb {
     box-shadow: 0 8px 30px -2px rgba(225, 29, 72, 0.32), 0 2px 10px rgba(0, 0, 0, 0.7);
 }
 
-/* Стильний скролбар */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;

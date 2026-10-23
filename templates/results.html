@@ -5,7 +5,6 @@
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
-    <!-- Навігація назад -->
     <div class="flex items-center justify-between">
         <a href="{{ url_for('index', region=current_region) }}" class="inline-flex items-center space-x-2 text-xs font-mono text-graphite-300 hover:text-white transition-colors bg-graphite-850 px-3.5 py-2 rounded-lg border border-graphite-700/80 hover:border-cherry-600/60 shadow-sm">
             <svg class="w-3.5 h-3.5 text-cherry-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,7 +21,6 @@
         </div>
     </div>
 
-    <!-- Заголовок треку -->
     <div class="rounded-2xl border border-graphite-700/70 bg-gradient-to-b from-graphite-850 to-[#12161f] p-6 sm:p-8 shadow-graphite-card relative overflow-hidden">
         <div class="absolute -top-24 -right-24 w-72 h-72 bg-cherry-900/15 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -44,7 +42,6 @@
                 </p>
             </div>
 
-            <!-- Бейдж збігу з вектором -->
             {% if user_match %}
             <div class="flex-shrink-0 bg-graphite-900/90 border border-cherry-600/50 shadow-cherry-subtle rounded-xl p-5 text-center min-w-[210px]">
                 <span class="text-[11px] font-mono uppercase tracking-wider text-graphite-400">Сумісність вектора</span>
@@ -69,10 +66,8 @@
         </div>
     </div>
 
-    <!-- Сітка: Радар 1-10 + Зарплатна матриця -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        <!-- Ліва колонка: Радар профілю напряму (1-10) -->
         <div class="lg:col-span-5 bg-graphite-850/85 rounded-2xl p-6 border border-graphite-700/70 shadow-graphite-card space-y-4">
             <div class="border-b border-graphite-700/60 pb-3 flex items-center justify-between">
                 <div>
@@ -84,12 +79,10 @@
                 </span>
             </div>
 
-            <!-- Canvas для порівняльного радара з чіткою градацією -->
             <div class="relative w-full aspect-square max-h-[340px] flex items-center justify-center">
                 <canvas id="detailRadarChart"></canvas>
             </div>
 
-            <!-- Числові координати напряму (1-10) -->
             <div class="grid grid-cols-2 gap-2 text-xs font-mono text-graphite-300 pt-2 border-t border-graphite-700/60">
                 <div class="bg-graphite-900/60 p-2.5 rounded-lg border border-graphite-700/60">
                     <span class="text-graphite-400 block text-[10px] uppercase">Поріг входу:</span>
@@ -110,7 +103,6 @@
             </div>
         </div>
 
-        <!-- Права колонка: Зарплатні сітки по регіонах -->
         <div class="lg:col-span-7 bg-graphite-850/85 rounded-2xl p-6 border border-graphite-700/70 shadow-graphite-card space-y-5">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-graphite-700/60 pb-3">
                 <div>
@@ -120,7 +112,6 @@
                     <p class="text-xs text-graphite-400 font-mono">Діапазони від Junior до Lead</p>
                 </div>
 
-                <!-- Селектор перегляду зарплат -->
                 <div class="inline-flex rounded-lg bg-graphite-900 p-1 border border-graphite-700 text-xs font-mono">
                     {% for r_key, r_info in regions.items() %}
                     <button type="button" class="salary-tab-btn px-2.5 py-1 rounded-md transition-all {% if r_key == current_region %}bg-cherry-700 text-white font-medium shadow-sm{% else %}text-graphite-400 hover:text-white{% endif %}"
@@ -131,7 +122,6 @@
                 </div>
             </div>
 
-            <!-- Картки грейдів зарплат для кожного регіону -->
             {% for r_key, r_salaries in salaries.items() %}
             <div id="salaryCard_{{ r_key }}" class="salary-region-block {% if r_key != current_region %}hidden{% endif %} space-y-3">
                 <div class="flex items-center justify-between text-xs font-mono text-graphite-400 bg-graphite-900/50 p-2.5 rounded-lg border border-graphite-700/60">
@@ -140,7 +130,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <!-- Junior -->
                     <div class="bg-graphite-900/60 rounded-xl p-3.5 border border-graphite-700/60">
                         <div class="flex justify-between items-center text-xs font-mono mb-1">
                             <span class="text-graphite-400">Junior (0 - 1.5 роки)</span>
@@ -151,7 +140,6 @@
                         </div>
                     </div>
 
-                    <!-- Middle -->
                     <div class="bg-graphite-900/60 rounded-xl p-3.5 border border-graphite-700/60">
                         <div class="flex justify-between items-center text-xs font-mono mb-1">
                             <span class="text-graphite-400">Middle (2 - 4 роки)</span>
@@ -162,7 +150,6 @@
                         </div>
                     </div>
 
-                    <!-- Senior -->
                     <div class="bg-graphite-900/60 rounded-xl p-3.5 border border-graphite-700/60">
                         <div class="flex justify-between items-center text-xs font-mono mb-1">
                             <span class="text-graphite-400">Senior (5+ років)</span>
@@ -173,7 +160,6 @@
                         </div>
                     </div>
 
-                    <!-- Lead / Architect -->
                     <div class="bg-graphite-900/60 rounded-xl p-3.5 border border-graphite-700/60">
                         <div class="flex justify-between items-center text-xs font-mono mb-1">
                             <span class="text-graphite-400">Lead / Architect</span>
@@ -187,7 +173,6 @@
             </div>
             {% endfor %}
 
-            <!-- Додаткові індикатори -->
             <div class="grid grid-cols-3 gap-3 pt-2 border-t border-graphite-700/60 text-center font-mono">
                 <div class="bg-graphite-900/50 p-2.5 rounded-lg border border-graphite-700/60">
                     <span class="text-[10px] text-graphite-400 uppercase block">Віддалена робота</span>
@@ -207,7 +192,6 @@
 
     </div>
 
-    <!-- Технологічний Стек -->
     <div class="bg-graphite-850/85 rounded-2xl p-6 border border-graphite-700/70 shadow-graphite-card space-y-3">
         <h2 class="text-sm font-semibold text-white uppercase tracking-wider font-mono">
             Ключовий технологічний стек
@@ -221,7 +205,6 @@
         </div>
     </div>
 
-    <!-- Переваги vs Підводні камені -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         <div class="bg-graphite-850/85 rounded-2xl p-6 border border-graphite-700/70 shadow-graphite-card space-y-3">
@@ -254,7 +237,6 @@
 
     </div>
 
-    <!-- Дорожня Карта Навчання (Roadmap) -->
     <div class="bg-graphite-850/85 rounded-2xl p-6 sm:p-8 border border-graphite-700/70 shadow-graphite-card space-y-6">
         <div class="border-b border-graphite-700/60 pb-3">
             <h2 class="text-lg font-bold text-white">
@@ -292,7 +274,6 @@
 
 </div>
 
-<!-- Передача векторів у JS для побудови порівняльного радара -->
 <script>
     window.DETAIL_TRACK_DATA = {
         title: {{ track.title|tojson }},

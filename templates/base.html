@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Global IT Career Navigator | Інтелектуальний ІТ-компас{% endblock %}</title>
     
-    <!-- Google Fonts: Inter & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,7 +20,6 @@
                         mono: ['JetBrains Mono', 'monospace'],
                     },
                     colors: {
-                        // Шляхетна глибока вишнева палітра (Noble Cherry / Crimson)
                         cherry: {
                             50: '#fff1f2',
                             100: '#ffe4e6',
@@ -31,12 +28,11 @@
                             400: '#fb7185',
                             500: '#f43f5e',
                             600: '#e11d48',
-                            700: '#be123c', // Основний глибокий вишневий
-                            800: '#9f1239', // Бордовий
-                            900: '#881337', // Глибокий оксамитовий винний
+                            700: '#be123c',
+                            800: '#9f1239',
+                            900: '#881337',
                             950: '#4c0519',
                         },
-                        // Глибокий графіт та антрацит (Deep Graphite & Anthracite)
                         graphite: {
                             50: '#f4f5f7',
                             100: '#e4e6ea',
@@ -46,10 +42,10 @@
                             500: '#535a6b',
                             600: '#3e4351',
                             700: '#2b2f3a',
-                            800: '#1b1e26', // Поверхні карток
+                            800: '#1b1e26',
                             850: '#15181f',
-                            900: '#10131a', // Панелі та бекграунд
-                            950: '#0b0d12', // Глибокий антрацитовий фон
+                            900: '#10131a',
+                            950: '#0b0d12',
                         }
                     },
                     boxShadow: {
@@ -62,20 +58,15 @@
         }
     </script>
 
-    <!-- Chart.js для інтерактивного радара пріоритетів -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Головна таблиця кастомних стилів (Noble Sliders & Graphite Theme) -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="min-h-screen flex flex-col font-sans selection:bg-cherry-700/40 selection:text-white">
 
-    <!-- Верхня навігаційна панель у глибокому графітовому тоні -->
     <header class="sticky top-0 z-50 backdrop-blur-md bg-[#0b0d12]/92 border-b border-graphite-700/60 transition-all duration-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 
-                <!-- Бренд / Логотип із вишневим акцентом -->
                 <a href="{{ url_for('index', region=current_region) }}" class="flex items-center space-x-3 group">
                     <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-graphite-800 border border-graphite-600/70 text-cherry-400 group-hover:border-cherry-600/80 group-hover:bg-graphite-750 transition-all duration-200 shadow-sm">
                         <svg class="w-5 h-5 text-cherry-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,7 +86,6 @@
                     </div>
                 </a>
 
-                <!-- Центральні навігаційні лінки -->
                 <nav class="hidden md:flex items-center space-x-7 text-xs sm:text-sm font-medium">
                     <a href="{{ url_for('index', region=current_region) }}#priorities-section" class="text-graphite-300 hover:text-white hover:border-b-2 hover:border-cherry-500 py-1 transition-all">
                         Пріоритети & Радар
@@ -108,7 +98,6 @@
                     </a>
                 </nav>
 
-                <!-- Селектор Регіону -->
                 <div class="flex items-center space-x-3">
                     <div class="relative flex items-center">
                         <label for="globalRegionSelect" class="sr-only">Оберіть регіон ринку праці</label>
@@ -139,12 +128,10 @@
         </div>
     </header>
 
-    <!-- Основний контент сторінки -->
     <main class="flex-grow">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Футер сайту у стриманому антрацитовому тоні -->
     <footer class="mt-20 border-t border-graphite-700/60 bg-[#090b0f] py-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-xs sm:text-sm">
@@ -185,7 +172,6 @@
         </div>
     </footer>
 
-    <!-- Основний JS скрипт -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>

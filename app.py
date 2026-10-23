@@ -6,13 +6,8 @@ import requests
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
-# ==============================================================================
-# Global IT Career Navigator - Flask & SQLAlchemy Backend
-# ==============================================================================
-
 app = Flask(__name__)
 
-# Налаштування бази даних SQLite
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(BASE_DIR, 'it_navigator.db')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -20,16 +15,7 @@ app.config['SECRET_KEY'] = 'it-career-navigator-cyber-secret-2026'
 
 db = SQLAlchemy(app)
 
-# ==============================================================================
-# Моделі бази даних
-# ==============================================================================
-
 class CareerTrack(db.Model):
-    """
-    Модель ІТ-напряму (кар'єрного треку).
-    Зберігає нормалізовані координати для радарного аналізу (1-10),
-    зарплатні сітки для різних ринків праці та детальну дорожню карту.
-    """
     __tablename__ = 'career_tracks'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -37,30 +23,23 @@ class CareerTrack(db.Model):
     title = db.Column(db.String(128), nullable=False)
     tagline = db.Column(db.String(256), nullable=False)
     category = db.Column(db.String(64), nullable=False)
-    icon_type = db.Column(db.String(32), default='code')  # code, server, cpu, cloud, shield, mobile, check, terminal, game
+    icon_type = db.Column(db.String(32), default='code')
     badge_color = db.Column(db.String(32), default='cyan')
 
-    # Радарний профіль напряму (шкала 1.0 - 10.0):
-    # 1. Початковий поріг входу (1: легкий/chill -> 10: hardcore cs math)
     radar_learning_curve = db.Column(db.Float, nullable=False)
-    # 2. Фінансовий вектор (1: стабільна середня база -> 10: top senior cap/global equity)
     radar_financial_vector = db.Column(db.Float, nullable=False)
-    # 3. Логіка vs Візуал (1: глибокий низькорівневий бекенд -> 10: UI/UX, анімації, дизайн)
     radar_architecture_visual = db.Column(db.Float, nullable=False)
-    # 4. Масштаб компаній (1: великий ентерпрайз/корпорація -> 10: стартапи/agile/freelance)
     radar_company_scale = db.Column(db.Float, nullable=False)
-    # 5. Стрес / Work-Life Balance (1: спокійний передбачуваний WLB -> 10: високий драйв/on-call)
     radar_stress_wlb = db.Column(db.Float, nullable=False)
 
-    # Детальний опис та аналітика у форматі JSON
     short_desc = db.Column(db.Text, nullable=False)
     full_desc = db.Column(db.Text, nullable=False)
-    salaries_json = db.Column(db.Text, nullable=False)     # Зарплати по регіонах (Junior, Middle, Senior, Lead)
-    market_stats_json = db.Column(db.Text, nullable=False) # Попит, відсоток віддаленої роботи, річний тренд
-    tech_stack_json = db.Column(db.Text, nullable=False)   # Список ключових технологій
-    pros_json = db.Column(db.Text, nullable=False)         # Переваги напряму
-    cons_json = db.Column(db.Text, nullable=False)         # Виклики та підводні камені
-    roadmap_json = db.Column(db.Text, nullable=False)      # Поетапна дорожня карта навчання
+    salaries_json = db.Column(db.Text, nullable=False)
+    market_stats_json = db.Column(db.Text, nullable=False)
+    tech_stack_json = db.Column(db.Text, nullable=False)
+    pros_json = db.Column(db.Text, nullable=False)
+    cons_json = db.Column(db.Text, nullable=False)
+    roadmap_json = db.Column(db.Text, nullable=False)
 
     def get_salaries(self):
         return json.loads(self.salaries_json)
@@ -81,7 +60,6 @@ class CareerTrack(db.Model):
         return json.loads(self.roadmap_json)
 
     def to_dict(self, region='global'):
-        """Серіалізація об'єкта для API відповідей з урахуванням обраного регіону."""
         salaries = self.get_salaries()
         regional_salary = salaries.get(region, salaries.get('global'))
 
@@ -111,10 +89,6 @@ class CareerTrack(db.Model):
 
 
 class MarketCache(db.Model):
-    """
-    Таблиця кешування трендів ринку праці.
-    Запобігає падінню сайту у разі недоступності зовнішніх API (Adzuna / GitHub Jobs mock).
-    """
     __tablename__ = 'market_cache'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -126,11 +100,6 @@ class MarketCache(db.Model):
         return json.loads(self.payload_json)
 
 
-# ==============================================================================
-# Логіка зовнішнього API та кешування трендів
-# ==============================================================================
-
-# Конфігурація регіонів та метадані
 SUPPORTED_REGIONS = {
     'global': {'name': 'Global (Світовий ринок)', 'currency': 'USD', 'symbol': '$'},
     'usa': {'name': 'USA (Північна Америка)', 'currency': 'USD', 'symbol': '$'},
@@ -139,7 +108,6 @@ SUPPORTED_REGIONS = {
     'ukraine': {'name': 'Ukraine (Український IT-хаб)', 'currency': 'USD', 'symbol': '$'}
 }
 
-# Еталонні свіжі дані для ініціалізації кешу
 DEFAULT_MARKET_SNAPSHOT = {
     'global': {
         'active_vacancies': '320,000+',
@@ -190,18 +158,11 @@ DEFAULT_MARKET_SNAPSHOT = {
 
 
 def fetch_market_trends_with_cache(region='global'):
-    """
-    Отримує актуальні тренди ринку праці.
-    1. Намагається опитати зовнішній API або швидкий ендпоінт.
-    2. У разі таймауту/помилки або відсутності ключа використовує надійний локальний кеш у SQLite.
-    Гарантує 100% стабільність роботи додатку.
-    """
     if region not in SUPPORTED_REGIONS:
         region = 'global'
 
     cached_entry = MarketCache.query.filter_by(region=region).first()
 
-    # Спроба отримати свіжі дані через зовнішній сервіс (симуляція запиту Adzuna/Market Analytics)
     external_url = os.environ.get('EXTERNAL_MARKET_API_URL')
     if external_url:
         try:
@@ -225,14 +186,11 @@ def fetch_market_trends_with_cache(region='global'):
                 db.session.commit()
                 return cached_entry.get_payload()
         except Exception:
-            # Логування та м'який перехід до резервного кешу
             pass
 
-    # Резервний кеш із локальної БД SQLite
     if cached_entry:
         return cached_entry.get_payload()
 
-    # Якщо запис ще не створено у БД, повертаємо еталонний снапшот
     fallback_data = DEFAULT_MARKET_SNAPSHOT.get(region, DEFAULT_MARKET_SNAPSHOT['global'])
     new_cache = MarketCache(
         region=region,
@@ -244,37 +202,18 @@ def fetch_market_trends_with_cache(region='global'):
     return fallback_data
 
 
-# ==============================================================================
-# Багатокритеріальний алгоритм матчингу (Decision Support System - DSS)
-# ==============================================================================
-
 def calculate_dss_matches(user_vector, region='global'):
-    """
-    Алгоритм системи підтримки прийняття рішень (DSS).
-    Порівнює 5-вимірний вектор пріоритетів користувача з вектором кожного ІТ-напряму:
-    1. u1: Поріг входу (Easy vs Hardcore Theory)
-    2. u2: Фінансовий вектор (Stable vs High Senior Cap)
-    3. u3: Логіка vs Візуал (Backend vs UI/UX)
-    4. u4: Масштаб компаній (Enterprise vs Startups)
-    5. u5: Рівень стресу / WLB (Calm vs Drive & Challenge)
-
-    Використовує зважену евклідову відстань з динамічними коефіцієнтами чутливості
-    та формує відсоток відповідності від 0% до 100%.
-    """
-    # Ваги для критеріїв (візуал та поріг входу мають підвищену вибірковість)
     weights = {
         'learning_curve': 1.05,
         'financial_vector': 1.00,
-        'architecture_visual': 1.25,  # Критичний розподіл: UI vs Backend
+        'architecture_visual': 1.25,
         'company_scale': 0.90,
         'stress_wlb': 1.00
     }
 
     sum_weights = sum(weights.values())
-    # Максимально можлива теоретична відстань при шкалі 1..10 (дельта до 9 балів)
     max_possible_distance = math.sqrt(sum(w * (9.0 ** 2) for w in weights.values()))
 
-    # Зчитуємо користувацькі значення та обмежуємо в межах 1..10
     u_learn = max(1.0, min(10.0, float(user_vector.get('learning_curve', 5))))
     u_fin = max(1.0, min(10.0, float(user_vector.get('financial_vector', 5))))
     u_arch = max(1.0, min(10.0, float(user_vector.get('architecture_visual', 5))))
@@ -285,14 +224,12 @@ def calculate_dss_matches(user_vector, region='global'):
     results = []
 
     for track in tracks:
-        # Розрахунок різниць по кожному виміру
         diff_learn = (u_learn - track.radar_learning_curve)
         diff_fin = (u_fin - track.radar_financial_vector)
         diff_arch = (u_arch - track.radar_architecture_visual)
         diff_scale = (u_scale - track.radar_company_scale)
         diff_stress = (u_stress - track.radar_stress_wlb)
 
-        # Зважена квадратична відстань
         weighted_sq_sum = (
             weights['learning_curve'] * (diff_learn ** 2) +
             weights['financial_vector'] * (diff_fin ** 2) +
@@ -302,12 +239,9 @@ def calculate_dss_matches(user_vector, region='global'):
         )
         euclidean_distance = math.sqrt(weighted_sq_sum)
 
-        # Нелінійне переведення відстані у відсоток подібності
         normalized_ratio = euclidean_distance / max_possible_distance
-        # Ступенева функція загострює різницю між хорошим і відмінним матчем
         match_percentage = round(max(15, min(99, (1.0 - (normalized_ratio ** 1.15)) * 100)))
 
-        # Генерація персоналізованого пояснення, чому цей напрям підходить
         match_reasons = []
         if abs(diff_arch) <= 1.5:
             if track.radar_architecture_visual >= 7.0:
@@ -337,22 +271,16 @@ def calculate_dss_matches(user_vector, region='global'):
 
         item = track.to_dict(region=region)
         item['match_percentage'] = match_percentage
-        item['match_reasons'] = match_reasons[:2]  # Топ-2 найважливіші аргументи
+        item['match_reasons'] = match_reasons[:2]
         item['raw_distance'] = round(euclidean_distance, 2)
         results.append(item)
 
-    # Сортування за відсотком відповідності (від найбільшого до найменшого)
     results.sort(key=lambda x: x['match_percentage'], reverse=True)
     return results
 
 
-# ==============================================================================
-# Роути Flask
-# ==============================================================================
-
 @app.route('/')
 def index():
-    """Головна сторінка кар'єрного навігатора."""
     selected_region = request.args.get('region', 'global')
     if selected_region not in SUPPORTED_REGIONS:
         selected_region = 'global'
@@ -371,10 +299,6 @@ def index():
 
 @app.route('/api/match', methods=['POST'])
 def api_match():
-    """
-    API ендпоінт для динамічного перерахунку збігу та оновлення радарної діаграми.
-    Приймає JSON із значеннями 5 слайдерів та обраним регіоном.
-    """
     data = request.get_json() or {}
     sliders = data.get('sliders', {})
     region = data.get('region', 'global')
@@ -382,11 +306,8 @@ def api_match():
     if region not in SUPPORTED_REGIONS:
         region = 'global'
 
-    # Розрахунок DSS
     ranked_tracks = calculate_dss_matches(sliders, region=region)
     top_3 = ranked_tracks[:3]
-
-    # Також повертаємо актуальні регіональні тренди
     trends = fetch_market_trends_with_cache(region)
 
     return jsonify({
@@ -401,7 +322,6 @@ def api_match():
 
 @app.route('/api/trends', methods=['GET'])
 def api_trends():
-    """Отримання свіжих трендів ринку для вибраного регіону."""
     region = request.args.get('region', 'global')
     trends = fetch_market_trends_with_cache(region)
     return jsonify({
@@ -414,11 +334,6 @@ def api_trends():
 
 @app.route('/career/<slug>')
 def career_detail(slug):
-    """
-    Детальна сторінка конкретного ІТ-напряму.
-    Містить дорожню карту, зарплатну аналітику по всіх регіонах,
-    плюси/мінуси, стек технологій та порівняльний радарний аналіз.
-    """
     track = CareerTrack.query.filter_by(slug=slug).first_or_404()
     selected_region = request.args.get('region', 'global')
     if selected_region not in SUPPORTED_REGIONS:
@@ -432,7 +347,6 @@ def career_detail(slug):
         'stress_wlb': request.args.get('stress', type=float)
     }
 
-    # Якщо користувач передав свої параметри, рахуємо точний відсоток матчу для цього напряму
     user_match = None
     if all(v is not None for v in user_params.values()):
         ranked = calculate_dss_matches(user_params, region=selected_region)
@@ -464,16 +378,11 @@ def career_detail(slug):
     )
 
 
-# ==============================================================================
-# Початкове наповнення бази даних (Seed Data)
-# ==============================================================================
-
 def seed_database():
-    """Створює таблиці та наповнює БД базовими ІТ-напрямами, якщо таблиці порожні."""
     db.create_all()
 
     if CareerTrack.query.first() is not None:
-        return  # База вже заповнена
+        return
 
     tracks_data = [
         {
@@ -997,7 +906,6 @@ def seed_database():
         )
         db.session.add(track)
 
-    # Ініціалізація резервного кешу для кожного підтримуваного регіону
     for region_key, payload in DEFAULT_MARKET_SNAPSHOT.items():
         cache_entry = MarketCache(
             region=region_key,
@@ -1007,17 +915,9 @@ def seed_database():
         db.session.add(cache_entry)
 
     db.session.commit()
-    print(">>> База даних успішно наповнена 10 кар'єрними треками та регіональними кешами!")
 
-
-# ==============================================================================
-# Точка входу в додаток
-# ==============================================================================
 
 if __name__ == '__main__':
     with app.app_context():
         seed_database()
-    print("==================================================================")
-    print("  Global IT Career Navigator запущено на http://127.0.0.1:5000")
-    print("==================================================================")
     app.run(debug=True, host='0.0.0.0', port=5000)

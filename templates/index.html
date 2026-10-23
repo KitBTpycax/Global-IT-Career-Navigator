@@ -5,7 +5,6 @@
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-9">
 
-    <!-- Hero Секція у глибокому графітовому тоні з вишневим акцентом -->
     <section class="rounded-2xl border border-graphite-700/70 bg-gradient-to-b from-graphite-850 via-[#131720] to-[#0e1117] p-8 sm:p-10 shadow-graphite-card relative overflow-hidden">
         <div class="absolute -top-32 -right-32 w-80 h-80 bg-cherry-900/15 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -23,7 +22,6 @@
                 Налаштуйте 5 параметрів вашого професійного фокусу за шкалою від 1 до 10. Алгоритм порівняє ваш вектор з базою провідних ІТ-спеціалізацій та визначить <strong>Топ-3 найбільш відповідні напрямки</strong> з реальними зарплатними вилками під обраний ринок праці.
             </p>
 
-            <!-- Швидкі Пресети (Custom Graphite & Cherry Preset Buttons) -->
             <div class="mt-6 pt-5 border-t border-graphite-700/60">
                 <p class="text-xs font-mono text-graphite-400 mb-2.5 flex items-center space-x-1.5">
                     <svg class="w-3.5 h-3.5 text-cherry-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,10 +59,8 @@
         </div>
     </section>
 
-    <!-- Основний блок: Кастомні повзунки + Радарна Діаграма (Шкала 1-10) -->
     <section id="priorities-section" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        <!-- Ліва колонка: 5 кастомних повзунків пріоритетів -->
         <div class="lg:col-span-7 bg-graphite-850/85 rounded-2xl p-6 sm:p-7 border border-graphite-700/70 shadow-graphite-card space-y-6">
             <div class="flex items-center justify-between border-b border-graphite-700/60 pb-3.5">
                 <div>
@@ -81,7 +77,6 @@
                 </button>
             </div>
 
-            <!-- Слайдер 1: Темп навчання та поріг входу -->
             <div class="slider-group space-y-1.5" data-slider-id="slider_learning_curve">
                 <div class="flex justify-between items-center text-xs sm:text-sm">
                     <span class="font-medium text-graphite-100">1. Темп навчання та поріг входу</span>
@@ -110,7 +105,6 @@
                 </div>
             </div>
 
-            <!-- Слайдер 2: Фінансовий вектор -->
             <div class="slider-group space-y-1.5" data-slider-id="slider_financial_vector">
                 <div class="flex justify-between items-center text-xs sm:text-sm">
                     <span class="font-medium text-graphite-100">2. Фінансовий вектор та стеля заробітку</span>
@@ -139,7 +133,6 @@
                 </div>
             </div>
 
-            <!-- Слайдер 3: Архітектура та логіка vs Візуал та Інтерфейс -->
             <div class="slider-group space-y-1.5" data-slider-id="slider_architecture_visual">
                 <div class="flex justify-between items-center text-xs sm:text-sm">
                     <span class="font-medium text-graphite-100">3. Архітектура & Логіка vs Візуал & UI</span>
@@ -168,7 +161,6 @@
                 </div>
             </div>
 
-            <!-- Слайдер 4: Масштаб компаній -->
             <div class="slider-group space-y-1.5" data-slider-id="slider_company_scale">
                 <div class="flex justify-between items-center text-xs sm:text-sm">
                     <span class="font-medium text-graphite-100">4. Масштаб компаній та культура процесів</span>
@@ -197,7 +189,6 @@
                 </div>
             </div>
 
-            <!-- Слайдер 5: Рівень стресу / Work-Life Balance -->
             <div class="slider-group space-y-1.5" data-slider-id="slider_stress_wlb">
                 <div class="flex justify-between items-center text-xs sm:text-sm">
                     <span class="font-medium text-graphite-100">5. Рівень стресу та Work-Life Balance</span>
@@ -235,7 +226,6 @@
             </div>
         </div>
 
-        <!-- Права колонка: Радарна Діаграма з вишневим вектором та шкалою 1-10 -->
         <div class="lg:col-span-5 bg-graphite-850/85 rounded-2xl p-6 sm:p-7 border border-graphite-700/70 shadow-graphite-card flex flex-col justify-between">
             <div class="border-b border-graphite-700/60 pb-3 mb-2 flex items-center justify-between">
                 <div>
@@ -249,12 +239,10 @@
                 </span>
             </div>
 
-            <!-- Полотно для Chart.js з видимою сіткою та кроками -->
             <div class="relative w-full aspect-square max-h-[360px] flex items-center justify-center py-2">
                 <canvas id="priorityRadarChart"></canvas>
             </div>
 
-            <!-- Підсумок вектору -->
             <div class="mt-2 pt-3 border-t border-graphite-700/60 rounded-xl p-3 bg-graphite-900/60 text-xs font-mono text-graphite-400 space-y-1">
                 <div class="flex justify-between items-center">
                     <span>Обраний ринок праці:</span>
@@ -269,7 +257,6 @@
 
     </section>
 
-    <!-- Секція ТОП-3 Рекомендацій -->
     <section id="matches-section" class="space-y-4 pt-2">
         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
@@ -288,16 +275,13 @@
             </div>
         </div>
 
-        <!-- Контейнер карток Топ-3 -->
         <div id="topMatchesContainer" class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <!-- Loading State -->
             <div class="col-span-full py-12 text-center text-graphite-400 font-mono text-xs">
                 Розрахунок відповідності векторів...
             </div>
         </div>
     </section>
 
-    <!-- Секція Тренди Ринку Праці -->
     <section id="trends-section" class="bg-graphite-850/85 rounded-2xl p-6 sm:p-8 border border-graphite-700/70 shadow-graphite-card space-y-5">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-graphite-700/60 pb-4">
             <div>
@@ -314,7 +298,6 @@
             </span>
         </div>
 
-        <!-- Сітка показників -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
             <div class="bg-graphite-900/60 rounded-xl p-4 border border-graphite-700/60">
@@ -366,7 +349,6 @@
 
     </section>
 
-    <!-- Повний каталог -->
     <section class="text-center py-4">
         <button id="toggleAllTracksBtn" class="px-4 py-2 rounded-lg bg-graphite-800 hover:bg-graphite-700 text-graphite-200 text-xs font-mono font-medium border border-graphite-600/70 hover:border-cherry-600/60 transition-all inline-flex items-center space-x-2 shadow-sm">
             <span>Розгорнути повний каталог (10 напрямів)</span>
@@ -376,7 +358,6 @@
         </button>
 
         <div id="allTracksGrid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left mt-6">
-            <!-- Заповнюється JS -->
         </div>
     </section>
 

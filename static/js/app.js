@@ -1,12 +1,4 @@
-/**
- * Global IT Career Navigator - Frontend Application Logic
- * Deep Graphite & Noble Cherry (Crimson) Palette
- * Custom dynamic range sliders with live gradient tracks and fluid micro-animations.
- * Chart.js Radar with strict 1-10 scale and clear step graduation.
- */
-
 document.addEventListener('DOMContentLoaded', () => {
-    // Ініціалізація компонентів залежно від поточної сторінки
     if (document.getElementById('priorityRadarChart')) {
         initNavigatorPage();
     }
@@ -17,10 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initGlobalRegionSync();
 });
-
-// ==============================================================================
-// 1. Логіка Головної Сторінки: Кастомні Слайдери, Радар (шкала 1-10), DSS
-// ==============================================================================
 
 let priorityRadar = null;
 let matchDebounceTimer = null;
@@ -39,18 +27,10 @@ function initNavigatorPage() {
     setupPresetButtons();
     setupResetButton();
     setupCatalogToggle();
-
-    // Початкове оновлення градієнтних треків слайдерів
     initSliderTracks();
-
-    // Початковий розрахунок із дефолтними значеннями
     triggerMatchCalculation();
 }
 
-/**
- * Ініціалізація та налаштування інтерактивного Chart.js Radar
- * у глибокій графітово-вишневій палітрі зі шкалою 0-10
- */
 function setupRadarChart() {
     const canvas = document.getElementById('priorityRadarChart');
     if (!canvas) return;
@@ -75,7 +55,7 @@ function setupRadarChart() {
                 {
                     label: 'Ваш вектор пріоритетів',
                     data: initialValues,
-                    backgroundColor: 'rgba(190, 18, 60, 0.28)', // Шляхетний вишневий (Noble Cherry)
+                    backgroundColor: 'rgba(190, 18, 60, 0.28)',
                     borderColor: '#be123c',
                     pointBackgroundColor: '#fb7185',
                     pointBorderColor: '#0b0d12',
@@ -88,7 +68,7 @@ function setupRadarChart() {
                 {
                     label: 'Еталон Топ-1 треку',
                     data: [5, 5, 5, 5, 5],
-                    backgroundColor: 'rgba(148, 163, 184, 0.08)', // Стриманий графітовий
+                    backgroundColor: 'rgba(148, 163, 184, 0.08)',
                     borderColor: 'rgba(148, 163, 184, 0.55)',
                     borderDash: [4, 4],
                     pointBackgroundColor: '#94a3b8',
@@ -134,9 +114,9 @@ function setupRadarChart() {
                     max: 10,
                     beginAtZero: true,
                     ticks: {
-                        stepSize: 2,         // Кроки: 0, 2, 4, 6, 8, 10
-                        display: true,       // Чітка видимість градації
-                        color: '#757c8e',    // Графітовий відтінок міток
+                        stepSize: 2,
+                        display: true,
+                        color: '#757c8e',
                         backdropColor: 'transparent',
                         font: {
                             family: "'JetBrains Mono', monospace",
@@ -171,27 +151,19 @@ function setupRadarChart() {
     });
 }
 
-/**
- * Оновлення візуального градієнта треку повзунка
- * (активна частина — шляхетний вишневий, решта — графіт)
- * та синхронізація інтерактивних насічок 1-10
- */
 function updateSliderTrack(slider, valEl) {
     const val = parseFloat(slider.value);
     const percent = ((val - 1) / (10 - 1)) * 100;
     
-    // Плавний насичений вишневий градієнт
     slider.style.background = `linear-gradient(to right, #9f1239 0%, #be123c ${Math.max(0, percent - 5)}%, #e11d48 ${percent}%, #1a1e28 ${percent}%, #1a1e28 100%)`;
     
-    // Анімація мікро-імпульсу на числовому бейджі
     if (valEl) {
         valEl.textContent = val.toFixed(1) + ' / 10';
         valEl.classList.remove('val-pulse');
-        void valEl.offsetWidth; // перезапуск css-анімації
+        void valEl.offsetWidth;
         valEl.classList.add('val-pulse');
     }
 
-    // Підсвічування відповідних насічок шкали
     const ticksRow = document.querySelector(`.slider-ticks-row[data-slider="${slider.id}"]`);
     if (ticksRow) {
         ticksRow.querySelectorAll('.slider-tick').forEach(tick => {
@@ -205,9 +177,6 @@ function updateSliderTrack(slider, valEl) {
     }
 }
 
-/**
- * Початкове фарбування всіх слайдерів
- */
 function initSliderTracks() {
     SLIDERS.forEach(s => {
         const slider = document.getElementById(s.id);
@@ -218,9 +187,6 @@ function initSliderTracks() {
     });
 }
 
-/**
- * Прослуховування подій переміщення 5 слайдерів та кліків по шкалі
- */
 function setupSliderListeners() {
     SLIDERS.forEach(slider => {
         const inputEl = document.getElementById(slider.id);
@@ -235,7 +201,6 @@ function setupSliderListeners() {
         });
     });
 
-    // Можливість кліку по будь-якій насічці (1..10) для точного миттєвого стрибка
     document.querySelectorAll('.slider-ticks-row .slider-tick').forEach(tick => {
         tick.addEventListener('click', () => {
             const row = tick.closest('.slider-ticks-row');
@@ -254,9 +219,6 @@ function setupSliderListeners() {
     });
 }
 
-/**
- * Оновлення векторних даних у Chart.js
- */
 function updateUserRadarDataset() {
     if (!priorityRadar) return;
 
@@ -266,12 +228,9 @@ function updateUserRadarDataset() {
     });
 
     priorityRadar.data.datasets[0].data = currentValues;
-    priorityRadar.update('none'); // миттєвий рендеринг без затримок
+    priorityRadar.update('none');
 }
 
-/**
- * Дебаунс для оптимізації запитів до API (180ms)
- */
 function debounceMatchCalculation() {
     const indicator = document.getElementById('statusIndicator');
     if (indicator) {
@@ -287,9 +246,6 @@ function debounceMatchCalculation() {
     }, 180);
 }
 
-/**
- * Збір значень слайдерів (діапазон 1-10)
- */
 function getCurrentSliderVector() {
     const vector = {};
     SLIDERS.forEach(s => {
@@ -299,17 +255,11 @@ function getCurrentSliderVector() {
     return vector;
 }
 
-/**
- * Отримання поточного активного регіону
- */
 function getSelectedRegion() {
     const regionSelect = document.getElementById('globalRegionSelect');
     return regionSelect ? regionSelect.value : 'global';
 }
 
-/**
- * Асинхронний виклик бекенду /api/match
- */
 async function triggerMatchCalculation() {
     const sliders = getCurrentSliderVector();
     const region = getSelectedRegion();
@@ -351,9 +301,6 @@ async function triggerMatchCalculation() {
     }
 }
 
-/**
- * Оновлення аури еталонного треку (Dataset 1) у радарній діаграмі
- */
 function updateTopTrackRadar(topTrack) {
     if (!priorityRadar || !topTrack) return;
 
@@ -376,9 +323,6 @@ function updateTopTrackRadar(topTrack) {
     }
 }
 
-/**
- * Рендеринг карток Топ-3 у шляхетному графітово-вишневому стилі
- */
 function renderMatches(data) {
     const container = document.getElementById('topMatchesContainer');
     if (!container) return;
@@ -399,24 +343,20 @@ function renderMatches(data) {
     let html = '';
 
     matches.forEach((item, index) => {
-        // Конфігурація карток з вишневим акцентом на #1
         const rankConfigs = [
             {
-                border: 'border-cherry-600/70 bg-graphite-850 shadow-cherry-subtle',
                 badgeClass: 'bg-cherry-950/90 text-cherry-300 border border-cherry-800/70',
                 badgeText: '#1 Рекомендовано',
                 matchColor: 'text-cherry-400',
                 btnClass: 'bg-cherry-700 hover:bg-cherry-600 text-white shadow-sm'
             },
             {
-                border: 'border-graphite-700/70 bg-graphite-850/80 hover:border-graphite-600',
                 badgeClass: 'bg-graphite-800 text-graphite-300 border border-graphite-600/70',
                 badgeText: '#2 Альтернатива',
                 matchColor: 'text-graphite-200',
                 btnClass: 'bg-graphite-800 hover:bg-graphite-700 text-graphite-200 border border-graphite-600/70 hover:border-cherry-600/50'
             },
             {
-                border: 'border-graphite-700/70 bg-graphite-850/80 hover:border-graphite-600',
                 badgeClass: 'bg-graphite-800 text-graphite-300 border border-graphite-600/70',
                 badgeText: '#3 Перспектива',
                 matchColor: 'text-graphite-200',
@@ -430,9 +370,7 @@ function renderMatches(data) {
 
         html += `
             <div class="relative rounded-2xl p-6 ${cardClass} flex flex-col justify-between transition-all duration-200">
-                
                 <div>
-                    <!-- Заголовок та бейдж матчу -->
                     <div class="flex items-start justify-between gap-3 mb-3">
                         <span class="text-[11px] font-mono font-medium px-2 py-0.5 rounded-md ${cfg.badgeClass}">
                             ${cfg.badgeText}
@@ -453,13 +391,11 @@ function renderMatches(data) {
                         Категорія: <span class="text-graphite-300">${item.category}</span>
                     </p>
 
-                    <!-- Аргументи алгоритму -->
                     <div class="bg-graphite-900/60 rounded-lg p-3 border border-graphite-700/60 text-xs text-graphite-300 mb-3 space-y-1">
                         <strong class="text-cherry-300 block font-mono text-[11px] uppercase">Чому цей трек:</strong>
                         ${item.match_reasons.map(r => `<p class="leading-relaxed text-graphite-300">• ${r}</p>`).join('')}
                     </div>
 
-                    <!-- Зарплатна сітка -->
                     <div class="bg-graphite-900/60 rounded-lg p-3 border border-graphite-700/60 mb-4">
                         <span class="text-[10px] font-mono uppercase text-graphite-400 block mb-1">
                             Зарплата (${region.toUpperCase()}):
@@ -470,7 +406,6 @@ function renderMatches(data) {
                         </div>
                     </div>
 
-                    <!-- Стек технологій -->
                     <div class="flex flex-wrap gap-1 mb-5">
                         ${item.tech_stack.slice(0, 5).map(tech => `
                             <span class="px-2 py-0.5 rounded bg-graphite-900 text-graphite-300 text-[11px] font-mono border border-graphite-700/70">
@@ -481,7 +416,6 @@ function renderMatches(data) {
                     </div>
                 </div>
 
-                <!-- Кнопка перегляду дорожньої карти -->
                 <a href="/career/${item.slug}?${queryParams}" 
                    class="w-full text-center py-2.5 px-4 rounded-lg text-xs font-mono font-medium ${cfg.btnClass} transition-colors flex items-center justify-center space-x-2">
                     <span>Дорожня карта & Деталі</span>
@@ -489,20 +423,14 @@ function renderMatches(data) {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                     </svg>
                 </a>
-
             </div>
         `;
     });
 
     container.innerHTML = html;
-
-    // Оновлюємо також повний каталог нижче
     renderFullCatalog(data.all_matches, queryParams);
 }
 
-/**
- * Рендеринг повного каталогу (10 треків)
- */
 function renderFullCatalog(allTracks, queryParams) {
     const grid = document.getElementById('allTracksGrid');
     if (!grid) return;
@@ -528,9 +456,6 @@ function renderFullCatalog(allTracks, queryParams) {
     grid.innerHTML = html;
 }
 
-/**
- * Оновлення блоку ринкових трендів
- */
 function updateTrendsSection(trends, region) {
     if (!trends) return;
 
@@ -555,9 +480,6 @@ function updateTrendsSection(trends, region) {
     if (labelCurrentRegion) labelCurrentRegion.textContent = region.toUpperCase();
 }
 
-/**
- * Налаштування кнопок швидких пресетів
- */
 function setupPresetButtons() {
     const buttons = document.querySelectorAll('.preset-btn');
     buttons.forEach(btn => {
@@ -589,9 +511,6 @@ function setSliderValue(sliderId, valId, value) {
     }
 }
 
-/**
- * Кнопка скидання слайдерів
- */
 function setupResetButton() {
     const resetBtn = document.getElementById('resetSlidersBtn');
     if (!resetBtn) return;
@@ -608,9 +527,6 @@ function setupResetButton() {
     });
 }
 
-/**
- * Перемикач розгортання повного каталогу
- */
 function setupCatalogToggle() {
     const btn = document.getElementById('toggleAllTracksBtn');
     const grid = document.getElementById('allTracksGrid');
@@ -632,10 +548,6 @@ function setupCatalogToggle() {
     });
 }
 
-// ==============================================================================
-// 2. Глобальний селектор регіону
-// ==============================================================================
-
 function initGlobalRegionSync() {
     const select = document.getElementById('globalRegionSelect');
     if (!select) return;
@@ -655,18 +567,11 @@ function initGlobalRegionSync() {
     });
 }
 
-// ==============================================================================
-// 3. Логіка Детальної Сторінки (/career/<slug>): Порівняльний Радар 1-10 & Зарплати
-// ==============================================================================
-
 function initDetailPage() {
     setupDetailRadarChart();
     setupSalaryTabs();
 }
 
-/**
- * Побудова порівняльного радара з чіткою шкалою 0-10 та кроками розмітки
- */
 function setupDetailRadarChart() {
     const canvas = document.getElementById('detailRadarChart');
     if (!canvas || !window.DETAIL_TRACK_DATA) return;
@@ -684,7 +589,7 @@ function setupDetailRadarChart() {
                 data.radar.company_scale,
                 data.radar.stress_wlb
             ],
-            backgroundColor: 'rgba(190, 18, 60, 0.28)', // Шляхетний вишневий
+            backgroundColor: 'rgba(190, 18, 60, 0.28)',
             borderColor: '#be123c',
             pointBackgroundColor: '#fb7185',
             pointBorderColor: '#0b0d12',
@@ -693,7 +598,6 @@ function setupDetailRadarChart() {
         }
     ];
 
-    // Якщо користувач перейшов з калькулятора, додаємо його вектор для порівняння
     if (data.user_vector && data.user_vector.learning_curve !== null) {
         datasets.push({
             label: 'Ваш особистий вектор',
@@ -704,7 +608,7 @@ function setupDetailRadarChart() {
                 data.user_vector.company_scale,
                 data.user_vector.stress_wlb
             ],
-            backgroundColor: 'rgba(16, 185, 129, 0.16)', // Смарагдовий контраст
+            backgroundColor: 'rgba(16, 185, 129, 0.16)',
             borderColor: '#10b981',
             borderDash: [4, 4],
             pointBackgroundColor: '#34d399',
@@ -745,8 +649,8 @@ function setupDetailRadarChart() {
                     max: 10,
                     beginAtZero: true,
                     ticks: {
-                        stepSize: 2,         // Шкала: 0, 2, 4, 6, 8, 10
-                        display: true,       // Чітка видимість градації
+                        stepSize: 2,
+                        display: true,
                         color: '#757c8e',
                         backdropColor: 'transparent',
                         font: {
@@ -778,9 +682,6 @@ function setupDetailRadarChart() {
     });
 }
 
-/**
- * Перемикання вкладок зарплат по регіонах
- */
 function setupSalaryTabs() {
     const tabButtons = document.querySelectorAll('.salary-tab-btn');
     const salaryBlocks = document.querySelectorAll('.salary-region-block');
