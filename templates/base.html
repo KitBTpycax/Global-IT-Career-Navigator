@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="uk" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Global IT Career Navigator | Інтелектуальний ІТ-компас{% endblock %}</title>
+    
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        // Шляхетна глибока вишнева палітра (Noble Cherry / Crimson)
+                        cherry: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c', // Основний глибокий вишневий
+                            800: '#9f1239', // Бордовий
+                            900: '#881337', // Глибокий оксамитовий винний
+                            950: '#4c0519',
+                        },
+                        // Глибокий графіт та антрацит (Deep Graphite & Anthracite)
+                        graphite: {
+                            50: '#f4f5f7',
+                            100: '#e4e6ea',
+                            200: '#c5c9d2',
+                            300: '#9fa5b4',
+                            400: '#757c8e',
+                            500: '#535a6b',
+                            600: '#3e4351',
+                            700: '#2b2f3a',
+                            800: '#1b1e26', // Поверхні карток
+                            850: '#15181f',
+                            900: '#10131a', // Панелі та бекграунд
+                            950: '#0b0d12', // Глибокий антрацитовий фон
+                        }
+                    },
+                    boxShadow: {
+                        'cherry-subtle': '0 4px 20px -2px rgba(190, 18, 60, 0.25)',
+                        'cherry-glow': '0 0 25px rgba(225, 29, 72, 0.22)',
+                        'graphite-card': '0 4px 24px -1px rgba(0, 0, 0, 0.45)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Chart.js для інтерактивного радара пріоритетів -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Головна таблиця кастомних стилів (Noble Sliders & Graphite Theme) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="min-h-screen flex flex-col font-sans selection:bg-cherry-700/40 selection:text-white">
+
+    <!-- Верхня навігаційна панель у глибокому графітовому тоні -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-[#0b0d12]/92 border-b border-graphite-700/60 transition-all duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                
+                <!-- Бренд / Логотип із вишневим акцентом -->
+                <a href="{{ url_for('index', region=current_region) }}" class="flex items-center space-x-3 group">
+                    <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-graphite-800 border border-graphite-600/70 text-cherry-400 group-hover:border-cherry-600/80 group-hover:bg-graphite-750 transition-all duration-200 shadow-sm">
+                        <svg class="w-5 h-5 text-cherry-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" stroke-width="1.8" />
+                            <polygon points="12,6 16,14 12,12 8,14" stroke-width="1.8" stroke-linejoin="round" fill="currentColor" class="text-cherry-600/40" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-semibold tracking-tight text-sm sm:text-base text-graphite-100 group-hover:text-white transition-colors">
+                                Career <span class="text-cherry-400">Navigator</span>
+                            </span>
+                            <span class="px-1.5 py-0.5 text-[10px] font-mono text-cherry-300 bg-cherry-950/70 border border-cherry-800/60 rounded">
+                                DSS v2.6
+                            </span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Центральні навігаційні лінки -->
+                <nav class="hidden md:flex items-center space-x-7 text-xs sm:text-sm font-medium">
+                    <a href="{{ url_for('index', region=current_region) }}#priorities-section" class="text-graphite-300 hover:text-white hover:border-b-2 hover:border-cherry-500 py-1 transition-all">
+                        Пріоритети & Радар
+                    </a>
+                    <a href="{{ url_for('index', region=current_region) }}#matches-section" class="text-graphite-300 hover:text-white hover:border-b-2 hover:border-cherry-500 py-1 transition-all">
+                        Рекомендації
+                    </a>
+                    <a href="{{ url_for('index', region=current_region) }}#trends-section" class="text-graphite-300 hover:text-white hover:border-b-2 hover:border-cherry-500 py-1 transition-all">
+                        Аналітика ринку
+                    </a>
+                </nav>
+
+                <!-- Селектор Регіону -->
+                <div class="flex items-center space-x-3">
+                    <div class="relative flex items-center">
+                        <label for="globalRegionSelect" class="sr-only">Оберіть регіон ринку праці</label>
+                        <div class="absolute left-2.5 pointer-events-none text-cherry-400/80 flex items-center">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="1.8"/>
+                                <line x1="2" y1="12" x2="22" y2="12" stroke-width="1.8"/>
+                                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke-width="1.8"/>
+                            </svg>
+                        </div>
+                        <select id="globalRegionSelect" 
+                                class="bg-graphite-850 text-graphite-100 font-mono text-xs pl-8 pr-7 py-1.5 rounded-lg border border-graphite-600/80 hover:border-cherry-600/70 focus:border-cherry-500 focus:ring-1 focus:ring-cherry-600/40 focus:outline-none cursor-pointer appearance-none transition-all shadow-inner">
+                            {% for key, reg in regions.items() %}
+                                <option value="{{ key }}" {% if key == current_region %}selected{% endif %}>
+                                    {{ reg.name }} ({{ reg.currency }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="absolute right-2.5 pointer-events-none text-graphite-400">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Основний контент сторінки -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Футер сайту у стриманому антрацитовому тоні -->
+    <footer class="mt-20 border-t border-graphite-700/60 bg-[#090b0f] py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-xs sm:text-sm">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <span class="font-semibold text-graphite-100">Global IT Career Navigator</span>
+                        <span class="text-[10px] px-1.5 py-0.5 bg-cherry-950/80 text-cherry-300 border border-cherry-800/50 rounded font-mono">DSS 2.6 Active</span>
+                    </div>
+                    <p class="text-graphite-400 leading-relaxed max-w-md">
+                        Аналітична платформа вибору спеціалізації на основі багатовимірного DSS-аналізу та реальних регіональних метрик ринку праці.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-xs font-mono uppercase tracking-wider text-graphite-300 mb-2">Архітектура</h4>
+                    <ul class="text-graphite-400 space-y-1 font-mono text-xs">
+                        <li>• Python Flask & SQLAlchemy</li>
+                        <li>• Weighted Euclidean DSS Engine</li>
+                        <li>• Chart.js Radar Multi-Axis (1-10)</li>
+                        <li>• Deep Graphite & Crimson Palette</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xs font-mono uppercase tracking-wider text-graphite-300 mb-2">Підтримка ринків</h4>
+                    <p class="text-xs text-graphite-400 leading-relaxed">
+                        Регіони: Global, USA, Europe, UK та Ukraine. Автоматичне узгодження валют та оцінки попиту.
+                    </p>
+                </div>
+            </div>
+
+            <div class="pt-6 border-t border-graphite-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-graphite-400 font-mono">
+                <p>© 2026 IT Career Navigator. Професійна система кар'єрної аналітики.</p>
+                <p class="mt-2 sm:mt-0 flex items-center space-x-2">
+                    <span>Регіон: <strong id="footerActiveRegion" class="text-cherry-400">{{ current_region|upper }}</strong></span>
+                    <span>•</span>
+                    <span class="text-graphite-400">Status: Operational</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Основний JS скрипт -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}{{ track.title }} | Детальний аналіз та Roadmap | Career Navigator{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Навігація назад -->
+    <div class="flex items-center justify-between">
+        <a href="{{ url_for('index', region=current_region) }}" class="inline-flex items-center space-x-2 text-xs font-mono text-graphite-300 hover:text-white transition-colors bg-graphite-850 px-3.5 py-2 rounded-lg border border-graphite-700/80 hover:border-cherry-600/60 shadow-sm">
+            <svg class="w-3.5 h-3.5 text-cherry-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>Назад до калькулятора</span>
+        </a>
+
+        <div class="flex items-center space-x-2 text-xs font-mono text-graphite-400">
+            <span>Категорія:</span>
+            <span class="px-2.5 py-0.5 rounded bg-graphite-800 text-graphite-200 border border-graphite-600/70 font-medium">
+                {{ track.category }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Заголовок треку -->
+    <div class="rounded-2xl border border-graphite-700/70 bg-gradient-to-b from-graphite-850 to-[#12161f] p-6 sm:p-8 shadow-graphite-card relative overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-cherry-900/15 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+            <div class="max-w-3xl">
+                <div class="inline-flex items-center space-x-2 px-2.5 py-0.5 rounded bg-cherry-950/80 text-cherry-300 text-xs font-mono uppercase tracking-wider mb-3 border border-cherry-800/60">
+                    <span>Спеціалізація #{{ track.id }}</span>
+                    <span>•</span>
+                    <span class="text-emerald-400">Ринок 2026</span>
+                </div>
+                <h1 class="text-2xl sm:text-4xl font-bold text-white tracking-tight">
+                    {{ track.title }}
+                </h1>
+                <p class="mt-2 text-base text-graphite-200 font-normal leading-relaxed">
+                    {{ track.tagline }}
+                </p>
+                <p class="mt-3 text-xs sm:text-sm text-graphite-400 leading-relaxed">
+                    {{ track.full_desc }}
+                </p>
+            </div>
+
+            <!-- Бейдж збігу з вектором -->
+            {% if user_match %}
+            <div class="flex-shrink-0 bg-graphite-900/90 border border-cherry-600/50 shadow-cherry-subtle rounded-xl p-5 text-center min-w-[210px]">
+                <span class="text-[11px] font-mono uppercase tracking-wider text-graphite-400">Сумісність вектора</span>
+                <div class="text-4xl font-bold text-cherry-400 font-mono my-1.5">
+                    {{ user_match.match_percentage }}%
+                </div>
+                <p class="text-xs text-graphite-300 leading-snug">
+                    {{ user_match.match_reasons[0] }}
+                </p>
+            </div>
+            {% else %}
+            <div class="flex-shrink-0 bg-graphite-900/90 border border-graphite-700/80 rounded-xl p-5 text-center min-w-[210px]">
+                <span class="text-[11px] font-mono uppercase tracking-wider text-graphite-400">Індекс затребуваності</span>
+                <div class="text-4xl font-bold text-cherry-400 font-mono my-1.5">
+                    {{ market_stats.demand_index }}/100
+                </div>
+                <p class="text-xs text-graphite-400 leading-snug">
+                    Світовий показник попиту
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Сітка: Радар 1-10 + Зарплатна матриця -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Ліва колонка: Радар профілю напряму (1-10) -->
+        <div class="lg:col-span-5 bg-graphite-850/85 rounded-2xl p-6 border border-graphite-700/70 shadow-graphite-card space-y-4">
+            <div class="border-b border-graphite-700/60 pb-3 flex items-center justify-between">
+                <div>
+                    <h2 class="text-base font-semibold text-white">Радарний профіль напряму</h2>
+                    <p class="text-xs text-graphite-400 font-mono">Шкала координат: 1 – 10</p>
+                </div>
+                <span class="text-xs font-mono px-2 py-0.5 bg-cherry-950/70 text-cherry-300 border border-cherry-800/60 rounded">
+                    Шкала 0 – 10
+                </span>
+            </div>
+
+            <!-- Canvas для порівняльного радара з чіткою градацією -->
+            <div class="relative w-full aspect-square max-h-[340px] flex items-center justify-center">
+                <canvas id="detailRadarChart"></canvas>
+            </div>
+
+            <!-- Числові координати напряму (1-10) -->
+            <div class="grid grid-cols-2 gap-2 text-xs font-mono text-graphite-300 pt-2 border-t border-graphite-700/60">
+                <div class="bg-graphite-900/60 p-2.5 rounded-lg border border-graphite-700/60">
+                    <span class="text-graphite-400 block text-[10px] uppercase">Поріг входу:</span>
+                    <strong class="text-white text-sm">{{ track.radar_learning_curve }} / 10</strong>
+                </div>
+                <div class="bg-graphite-900/60 p-2.5 rounded-lg border border-graphite-700/60">
+                    <span class="text-graphite-400 block text-[10px] uppercase">Фінансова стеля:</span>
+                    <strong class="text-white text-sm">{{ track.radar_financial_vector }} / 10</strong>
+                </div>
+                <div class="bg-graphite-900/60 p-2.5 rounded-lg border border-graphite-700/60">
+                    <span class="text-graphite-400 block text-[10px] uppercase">Візуал / UI-UX:</span>
+                    <strong class="text-white text-sm">{{ track.radar_architecture_visual }} / 10</strong>
+                </div>
+                <div class="bg-graphite-900/60 p-2.5 rounded-lg border border-graphite-700/60">
+                    <span class="text-graphite-400 block text-[10px] uppercase">Стартапи vs Корп:</span>
+                    <strong class="text-white text-sm">{{ track.radar_company_scale }} / 10</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Права колонка: Зарплатні сітки по регіонах -->
+        <div class="lg:col-span-7 bg-graphite-850/85 rounded-2xl p-6 border border-graphite-700/70 shadow-graphite-card space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-graphite-700/60 pb-3">
+                <div>
+                    <h2 class="text-base font-semibold text-white">
+                        Зарплатні вилки по ринках
+                    </h2>
+                    <p class="text-xs text-graphite-400 font-mono">Діапазони від Junior до Lead</p>
+                </div>
+
+                <!-- Селектор перегляду зарплат -->
+                <div class="inline-flex rounded-lg bg-graphite-900 p-1 border border-graphite-700 text-xs font-mono">
+                    {% for r_key, r_info in regions.items() %}
+                    <button type="button" class="salary-tab-btn px-2.5 py-1 rounded-md transition-all {% if r_key == current_region %}bg-cherry-700 text-white font-medium shadow-sm{% else %}text-graphite-400 hover:text-white{% endif %}"
+                            data-region-target="{{ r_key }}">
+                        {{ r_key|upper }}
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Картки грейдів зарплат для кожного регіону -->
+            {% for r_key, r_salaries in salaries.items() %}
+            <div id="salaryCard_{{ r_key }}" class="salary-region-block {% if r_key != current_region %}hidden{% endif %} space-y-3">
+                <div class="flex items-center justify-between text-xs font-mono text-graphite-400 bg-graphite-900/50 p-2.5 rounded-lg border border-graphite-700/60">
+                    <span>Ринок: <strong class="text-white">{{ regions[r_key].name }}</strong></span>
+                    <span>Валюта: <strong class="text-cherry-400">{{ regions[r_key].currency }} ({{ regions[r_key].symbol }})</strong></span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Junior -->
+                    <div class="bg-graphite-900/60 rounded-xl p-3.5 border border-graphite-700/60">
+                        <div class="flex justify-between items-center text-xs font-mono mb-1">
+                            <span class="text-graphite-400">Junior (0 - 1.5 роки)</span>
+                            <span class="text-emerald-400 text-[10px] bg-emerald-950/70 px-1.5 py-0.5 rounded border border-emerald-800/50">Старт</span>
+                        </div>
+                        <div class="text-base font-semibold text-white font-mono">
+                            {{ r_salaries.junior }}
+                        </div>
+                    </div>
+
+                    <!-- Middle -->
+                    <div class="bg-graphite-900/60 rounded-xl p-3.5 border border-graphite-700/60">
+                        <div class="flex justify-between items-center text-xs font-mono mb-1">
+                            <span class="text-graphite-400">Middle (2 - 4 роки)</span>
+                            <span class="text-cherry-400 text-[10px] bg-cherry-950/80 px-1.5 py-0.5 rounded border border-cherry-800/60">Основний</span>
+                        </div>
+                        <div class="text-base font-semibold text-white font-mono">
+                            {{ r_salaries.middle }}
+                        </div>
+                    </div>
+
+                    <!-- Senior -->
+                    <div class="bg-graphite-900/60 rounded-xl p-3.5 border border-graphite-700/60">
+                        <div class="flex justify-between items-center text-xs font-mono mb-1">
+                            <span class="text-graphite-400">Senior (5+ років)</span>
+                            <span class="text-cherry-400 text-[10px] bg-cherry-950/80 px-1.5 py-0.5 rounded border border-cherry-800/60">Експерт</span>
+                        </div>
+                        <div class="text-base font-semibold text-emerald-400 font-mono">
+                            {{ r_salaries.senior }}
+                        </div>
+                    </div>
+
+                    <!-- Lead / Architect -->
+                    <div class="bg-graphite-900/60 rounded-xl p-3.5 border border-graphite-700/60">
+                        <div class="flex justify-between items-center text-xs font-mono mb-1">
+                            <span class="text-graphite-400">Lead / Architect</span>
+                            <span class="text-amber-400 text-[10px] bg-amber-950/70 px-1.5 py-0.5 rounded border border-amber-800/50">Топ-рівень</span>
+                        </div>
+                        <div class="text-base font-semibold text-amber-400 font-mono">
+                            {{ r_salaries.lead }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Додаткові індикатори -->
+            <div class="grid grid-cols-3 gap-3 pt-2 border-t border-graphite-700/60 text-center font-mono">
+                <div class="bg-graphite-900/50 p-2.5 rounded-lg border border-graphite-700/60">
+                    <span class="text-[10px] text-graphite-400 uppercase block">Віддалена робота</span>
+                    <strong class="text-graphite-200 text-xs sm:text-sm">{{ market_stats.remote_share }}</strong>
+                </div>
+                <div class="bg-graphite-900/50 p-2.5 rounded-lg border border-graphite-700/60">
+                    <span class="text-[10px] text-graphite-400 uppercase block">Річний приріст</span>
+                    <strong class="text-emerald-400 text-xs sm:text-sm">{{ market_stats.yoy_growth }}</strong>
+                </div>
+                <div class="bg-graphite-900/50 p-2.5 rounded-lg border border-graphite-700/60">
+                    <span class="text-[10px] text-graphite-400 uppercase block">Відкриті позиції</span>
+                    <strong class="text-cherry-400 text-xs sm:text-sm">{{ market_stats.open_vacancies_est }}</strong>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Технологічний Стек -->
+    <div class="bg-graphite-850/85 rounded-2xl p-6 border border-graphite-700/70 shadow-graphite-card space-y-3">
+        <h2 class="text-sm font-semibold text-white uppercase tracking-wider font-mono">
+            Ключовий технологічний стек
+        </h2>
+        <div class="flex flex-wrap gap-2 pt-1">
+            {% for skill in tech_stack %}
+            <span class="px-2.5 py-1 rounded-lg bg-graphite-900 text-graphite-200 font-mono text-xs border border-graphite-700/70 hover:border-cherry-700/60 transition-colors">
+                {{ skill }}
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Переваги vs Підводні камені -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div class="bg-graphite-850/85 rounded-2xl p-6 border border-graphite-700/70 shadow-graphite-card space-y-3">
+            <h3 class="text-sm font-semibold text-emerald-400 flex items-center space-x-2">
+                <span>Переваги напрямку</span>
+            </h3>
+            <ul class="space-y-2.5 text-xs sm:text-sm text-graphite-300">
+                {% for pro in pros %}
+                <li class="flex items-start space-x-2.5">
+                    <span class="text-emerald-400 mt-0.5">•</span>
+                    <span>{{ pro }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="bg-graphite-850/85 rounded-2xl p-6 border border-graphite-700/70 shadow-graphite-card space-y-3">
+            <h3 class="text-sm font-semibold text-amber-400 flex items-center space-x-2">
+                <span>Специфіка та виклики</span>
+            </h3>
+            <ul class="space-y-2.5 text-xs sm:text-sm text-graphite-300">
+                {% for con in cons %}
+                <li class="flex items-start space-x-2.5">
+                    <span class="text-amber-400 mt-0.5">•</span>
+                    <span>{{ con }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- Дорожня Карта Навчання (Roadmap) -->
+    <div class="bg-graphite-850/85 rounded-2xl p-6 sm:p-8 border border-graphite-700/70 shadow-graphite-card space-y-6">
+        <div class="border-b border-graphite-700/60 pb-3">
+            <h2 class="text-lg font-bold text-white">
+                Дорожня карта підготовки (Roadmap)
+            </h2>
+            <p class="text-xs text-graphite-400 mt-0.5">
+                Послідовні етапи вивчення з рекомендованими темами
+            </p>
+        </div>
+
+        <div class="space-y-5">
+            {% for phase in roadmap %}
+            <div class="relative pl-6 border-l border-graphite-700/70 hover:border-cherry-700/70 transition-colors py-1">
+                <div class="absolute -left-1.5 top-1.5 w-3 h-3 rounded-full bg-cherry-600 border-2 border-graphite-900"></div>
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+                    <h3 class="text-sm font-semibold text-white">{{ phase.phase }}</h3>
+                    <span class="px-2 py-0.5 text-[11px] font-mono rounded bg-graphite-900 text-cherry-300 border border-graphite-700 w-fit">
+                        {{ phase.duration }}
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 mt-2">
+                    {% for topic in phase.topics %}
+                    <label class="flex items-start space-x-2.5 p-2.5 rounded-lg bg-graphite-900/60 border border-graphite-700/60 hover:border-cherry-700/50 cursor-pointer transition-colors group">
+                        <input type="checkbox" class="mt-0.5 w-3.5 h-3.5 rounded text-cherry-600 bg-graphite-800 border-graphite-600 focus:ring-0 focus:ring-offset-0">
+                        <span class="text-xs text-graphite-300 group-hover:text-white leading-relaxed">{{ topic }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<!-- Передача векторів у JS для побудови порівняльного радара -->
+<script>
+    window.DETAIL_TRACK_DATA = {
+        title: {{ track.title|tojson }},
+        radar: {
+            learning_curve: {{ track.radar_learning_curve }},
+            financial_vector: {{ track.radar_financial_vector }},
+            architecture_visual: {{ track.radar_architecture_visual }},
+            company_scale: {{ track.radar_company_scale }},
+            stress_wlb: {{ track.radar_stress_wlb }}
+        },
+        user_vector: {
+            learning_curve: {{ user_params.learning_curve or 'null' }},
+            financial_vector: {{ user_params.financial_vector or 'null' }},
+            architecture_visual: {{ user_params.architecture_visual or 'null' }},
+            company_scale: {{ user_params.company_scale or 'null' }},
+            stress_wlb: {{ user_params.stress_wlb or 'null' }}
+        }
+    };
+</script>
+{% endblock %}

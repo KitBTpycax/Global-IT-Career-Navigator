@@ -1,0 +1,217 @@
+/**
+ * Global IT Career Navigator - Custom Style Sheet
+ * Theme: Deep Graphite & Noble Cherry / Crimson Red
+ * Custom high-end interactive range sliders, animations, and tactile UI components.
+ */
+
+/* ==============================================================================
+   1. Глобальні стилі та фон у шляхетному графітовому тоні
+   ============================================================================== */
+
+:root {
+    --graphite-bg: #0b0d12;
+    --graphite-surface: #12151e;
+    --graphite-card: #161a24;
+    --graphite-border: #242938;
+    --graphite-muted: #757c8e;
+    
+    --cherry-main: #be123c;
+    --cherry-bright: #e11d48;
+    --cherry-light: #fb7185;
+    --cherry-deep: #881337;
+    --cherry-dark: #4c0519;
+}
+
+body {
+    background-color: var(--graphite-bg);
+    color: #e4e6ea;
+    background-image: 
+        radial-gradient(circle at 50% 0%, rgba(190, 18, 60, 0.07) 0%, transparent 65%),
+        radial-gradient(circle at 90% 80%, rgba(136, 19, 55, 0.04) 0%, transparent 50%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+/* ==============================================================================
+   2. Кастомні круті повзунки (Custom Noble Cherry Range Sliders)
+   ============================================================================== */
+
+.custom-range-wrapper {
+    position: relative;
+    padding: 4px 0 10px 0;
+}
+
+/* Базовий трек повзунка */
+input[type=range].noble-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 9px;
+    border-radius: 9999px;
+    outline: none;
+    cursor: pointer;
+    background: #1a1e28;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.04);
+    position: relative;
+    z-index: 2;
+    transition: background 0.12s ease;
+}
+
+/* Ковзаючий вишневий бігунок для WebKit (Chrome, Safari, Edge) */
+input[type=range].noble-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fb7185 0%, #be123c 60%, #881337 100%);
+    border: 2.5px solid #ffffff;
+    box-shadow: 
+        0 3px 10px rgba(0, 0, 0, 0.65), 
+        0 0 0 1px rgba(190, 18, 60, 0.6), 
+        0 0 14px rgba(225, 29, 72, 0.35);
+    cursor: grab;
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s ease;
+}
+
+input[type=range].noble-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.22);
+    background: radial-gradient(circle at 35% 35%, #fda4af 0%, #e11d48 60%, #9f1239 100%);
+    box-shadow: 
+        0 4px 14px rgba(0, 0, 0, 0.75), 
+        0 0 0 3px rgba(244, 63, 94, 0.4), 
+        0 0 20px rgba(225, 29, 72, 0.55);
+}
+
+input[type=range].noble-slider:active::-webkit-slider-thumb {
+    cursor: grabbing;
+    transform: scale(1.32);
+    background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e11d48 50%, #881337 100%);
+    box-shadow: 
+        0 5px 18px rgba(0, 0, 0, 0.85), 
+        0 0 0 4px rgba(244, 63, 94, 0.55), 
+        0 0 26px rgba(225, 29, 72, 0.75);
+}
+
+/* Ковзаючий бігунок для Firefox */
+input[type=range].noble-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fb7185 0%, #be123c 60%, #881337 100%);
+    border: 2.5px solid #ffffff;
+    box-shadow: 
+        0 3px 10px rgba(0, 0, 0, 0.65), 
+        0 0 0 1px rgba(190, 18, 60, 0.6), 
+        0 0 14px rgba(225, 29, 72, 0.35);
+    cursor: grab;
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+input[type=range].noble-slider::-moz-range-thumb:hover {
+    transform: scale(1.22);
+}
+
+input[type=range].noble-slider:active::-moz-range-thumb {
+    cursor: grabbing;
+    transform: scale(1.32);
+}
+
+/* Сітка мікро-насічок (1..10) під кожним повзунком */
+.slider-ticks-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 4px 0 4px;
+    user-select: none;
+}
+
+.slider-tick {
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.slider-tick-dot {
+    width: 3.5px;
+    height: 3.5px;
+    border-radius: 50%;
+    background-color: #2b3040;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.slider-tick:hover .slider-tick-dot {
+    background-color: #fb7185;
+    transform: scale(1.6);
+}
+
+.slider-tick.active .slider-tick-dot {
+    background-color: #be123c;
+    box-shadow: 0 0 6px rgba(190, 18, 60, 0.8);
+    transform: scale(1.3);
+}
+
+/* ==============================================================================
+   3. Анімовані бейджі значень (Value Counter Badge Pop)
+   ============================================================================== */
+
+.noble-val-badge {
+    display: inline-flex;
+    align-items: center;
+    font-variant-numeric: tabular-nums;
+    transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.noble-val-badge.val-pulse {
+    transform: scale(1.12);
+    border-color: #e11d48 !important;
+    box-shadow: 0 0 14px rgba(225, 29, 72, 0.45);
+}
+
+/* ==============================================================================
+   4. Картки та шляхетні вишневі акценти
+   ============================================================================== */
+
+.card-noble {
+    background: linear-gradient(180deg, rgba(22, 26, 36, 0.95) 0%, rgba(18, 21, 30, 0.95) 100%);
+    border: 1px solid rgba(43, 49, 66, 0.7);
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-noble:hover {
+    border-color: rgba(60, 68, 90, 0.9);
+}
+
+.card-top-match {
+    background: linear-gradient(180deg, rgba(28, 22, 30, 0.95) 0%, rgba(20, 19, 26, 0.95) 100%);
+    border: 1px solid rgba(190, 18, 60, 0.6);
+    box-shadow: 0 6px 24px -2px rgba(190, 18, 60, 0.22), 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.card-top-match:hover {
+    border-color: rgba(225, 29, 72, 0.85);
+    box-shadow: 0 8px 30px -2px rgba(225, 29, 72, 0.32), 0 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+/* Стильний скролбар */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #0b0d12;
+}
+::-webkit-scrollbar-thumb {
+    background: #232733;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #9f1239;
+}
