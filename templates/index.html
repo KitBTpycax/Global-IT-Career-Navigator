@@ -1,56 +1,59 @@
 {% extends "base.html" %}
+{% load static %}
+{% load navigator_tags %}
 
 {% block title %}Global IT Career Navigator | Інтелектуальний ІТ-компас та аналіз векторів{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-9">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
 
-    <section class="rounded-2xl border border-graphite-700/70 bg-gradient-to-b from-graphite-850 via-[#131720] to-[#0e1117] p-8 sm:p-10 shadow-graphite-card relative overflow-hidden">
-        <div class="absolute -top-32 -right-32 w-80 h-80 bg-cherry-900/15 rounded-full blur-3xl pointer-events-none"></div>
+    <section class="rounded-3xl glass-panel-glow p-8 sm:p-12 relative overflow-hidden">
+        <div class="absolute -top-32 -right-32 w-96 h-96 bg-gradient-to-br from-fuchsia-600/20 via-pink-600/20 to-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-violet-600/15 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="max-w-3xl relative z-10">
-            <div class="inline-flex items-center space-x-2 px-2.5 py-1 rounded-md bg-cherry-950/80 border border-cherry-800/60 text-cherry-300 text-xs font-mono uppercase tracking-wider mb-4">
-                <span class="w-1.5 h-1.5 rounded-full bg-cherry-500"></span>
-                <span>Decision Support System • Vector Matching 1–10</span>
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-pink-500/15 border border-pink-500/35 text-pink-200 text-xs font-mono uppercase tracking-wider mb-5 backdrop-blur-md">
+                <span class="w-2 h-2 rounded-full bg-sunset-orange animate-pulse"></span>
+                <span>Decision Support System • Multi-Axis Vector Matching (1–10)</span>
             </div>
             
-            <h1 class="text-2xl sm:text-4xl font-bold tracking-tight text-white leading-tight">
-                ІТ Кар'єрний Навігатор
+            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                ІТ Кар'єрний <span class="gradient-text-retro">Навігатор</span>
             </h1>
             
-            <p class="mt-3 text-sm sm:text-base text-graphite-200 leading-relaxed font-normal">
-                Налаштуйте 5 параметрів вашого професійного фокусу за шкалою від 1 до 10. Алгоритм порівняє ваш вектор з базою провідних ІТ-спеціалізацій та визначить <strong>Топ-3 найбільш відповідні напрямки</strong> з реальними зарплатними вилками під обраний ринок праці.
+            <p class="mt-4 text-base sm:text-lg text-slate-200 leading-relaxed font-normal">
+                Налаштуйте 5 параметрів вашого кар'єрного вектору за шкалою від 1 до 10. Алгоритм порівняє ваш профіль з базою провідних ІТ-спеціалізацій та визначить <strong class="text-white">Топ-3 найбільш відповідні напрямки</strong> з реальними зарплатними вилками під обраний ринок праці.
             </p>
 
-            <div class="mt-6 pt-5 border-t border-graphite-700/60">
-                <p class="text-xs font-mono text-graphite-400 mb-2.5 flex items-center space-x-1.5">
-                    <svg class="w-3.5 h-3.5 text-cherry-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="mt-7 pt-6 border-t border-white/10">
+                <p class="text-xs font-mono text-pink-300 mb-3 flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-sunset-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
                     <span>Швидкі профілі (авто-налаштування повзунків):</span>
                 </p>
-                <div class="flex flex-wrap gap-2">
-                    <button type="button" class="preset-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-graphite-800/80 text-graphite-200 border border-graphite-600/70 hover:bg-graphite-700 hover:text-white hover:border-cherry-600/60 transition-all shadow-sm"
+                <div class="flex flex-wrap gap-2.5">
+                    <button type="button" class="preset-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-white/10 text-slate-100 border border-white/15 hover:bg-white/20 hover:border-pink-500/60 hover:text-white transition-all shadow-sm backdrop-blur-md"
                             data-learn="4" data-fin="7" data-arch="9" data-scale="7" data-stress="4">
                         Frontend & UI
                     </button>
-                    <button type="button" class="preset-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-graphite-800/80 text-graphite-200 border border-graphite-600/70 hover:bg-graphite-700 hover:text-white hover:border-cherry-600/60 transition-all shadow-sm"
+                    <button type="button" class="preset-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-white/10 text-slate-100 border border-white/15 hover:bg-white/20 hover:border-pink-500/60 hover:text-white transition-all shadow-sm backdrop-blur-md"
                             data-learn="6" data-fin="8.5" data-arch="2" data-scale="5" data-stress="5">
                         Python / Backend
                     </button>
-                    <button type="button" class="preset-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-graphite-800/80 text-graphite-200 border border-graphite-600/70 hover:bg-graphite-700 hover:text-white hover:border-cherry-600/60 transition-all shadow-sm"
+                    <button type="button" class="preset-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-white/10 text-slate-100 border border-white/15 hover:bg-white/20 hover:border-pink-500/60 hover:text-white transition-all shadow-sm backdrop-blur-md"
                             data-learn="9" data-fin="10" data-arch="3" data-scale="7" data-stress="7">
                         AI & Machine Learning
                     </button>
-                    <button type="button" class="preset-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-graphite-800/80 text-graphite-200 border border-graphite-600/70 hover:bg-graphite-700 hover:text-white hover:border-cherry-600/60 transition-all shadow-sm"
+                    <button type="button" class="preset-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-white/10 text-slate-100 border border-white/15 hover:bg-white/20 hover:border-pink-500/60 hover:text-white transition-all shadow-sm backdrop-blur-md"
                             data-learn="8" data-fin="9.5" data-arch="1.5" data-scale="4" data-stress="7.5">
                         DevOps & Cloud
                     </button>
-                    <button type="button" class="preset-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-graphite-800/80 text-graphite-200 border border-graphite-600/70 hover:bg-graphite-700 hover:text-white hover:border-cherry-600/60 transition-all shadow-sm"
+                    <button type="button" class="preset-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-white/10 text-slate-100 border border-white/15 hover:bg-white/20 hover:border-pink-500/60 hover:text-white transition-all shadow-sm backdrop-blur-md"
                             data-learn="3.5" data-fin="6.5" data-arch="4" data-scale="2.5" data-stress="3">
                         QA Automation & SDET
                     </button>
-                    <button type="button" class="preset-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-graphite-800/80 text-graphite-200 border border-graphite-600/70 hover:bg-graphite-700 hover:text-white hover:border-cherry-600/60 transition-all shadow-sm"
+                    <button type="button" class="preset-btn px-3.5 py-2 rounded-xl text-xs font-medium bg-white/10 text-slate-100 border border-white/15 hover:bg-white/20 hover:border-pink-500/60 hover:text-white transition-all shadow-sm backdrop-blur-md"
                             data-learn="6" data-fin="8" data-arch="6" data-scale="8.5" data-stress="6">
                         Fullstack Web
                     </button>
@@ -59,17 +62,17 @@
         </div>
     </section>
 
-    <section id="priorities-section" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <section id="priorities-section" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        <div class="lg:col-span-7 bg-graphite-850/85 rounded-2xl p-6 sm:p-7 border border-graphite-700/70 shadow-graphite-card space-y-6">
-            <div class="flex items-center justify-between border-b border-graphite-700/60 pb-3.5">
+        <div class="lg:col-span-7 glass-panel rounded-3xl p-6 sm:p-8 space-y-6">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4">
                 <div>
-                    <h2 class="text-base font-semibold text-white flex items-center space-x-2">
+                    <h2 class="text-lg font-bold text-white flex items-center space-x-2">
                         <span>Налаштування пріоритетів (1 – 10)</span>
                     </h2>
-                    <p class="text-xs text-graphite-400 font-mono mt-0.5">Переміщуйте повзунки для розрахунку радарного профілю</p>
+                    <p class="text-xs text-pink-300/80 font-mono mt-0.5">Переміщуйте повзунки для розрахунку радарного профілю</p>
                 </div>
-                <button id="resetSlidersBtn" class="text-xs font-mono text-graphite-400 hover:text-cherry-400 transition-colors flex items-center space-x-1">
+                <button id="resetSlidersBtn" class="text-xs font-mono text-pink-300 hover:text-sunset-orange transition-colors flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 hover:border-white/20">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
@@ -77,10 +80,10 @@
                 </button>
             </div>
 
-            <div class="slider-group space-y-1.5" data-slider-id="slider_learning_curve">
+            <div class="slider-group space-y-2" data-slider-id="slider_learning_curve">
                 <div class="flex justify-between items-center text-xs sm:text-sm">
-                    <span class="font-medium text-graphite-100">1. Темп навчання та поріг входу</span>
-                    <span id="val_learning_curve" class="noble-val-badge font-mono font-semibold text-cherry-300 bg-cherry-950/90 border border-cherry-800/70 px-2.5 py-0.5 rounded text-xs">
+                    <span class="font-semibold text-white">1. Темп навчання та поріг входу</span>
+                    <span id="val_learning_curve" class="noble-val-badge font-mono font-semibold px-2.5 py-0.5 rounded-lg text-xs">
                         5.0 / 10
                     </span>
                 </div>
@@ -99,16 +102,16 @@
                         <div class="slider-tick" data-val="10"><span class="slider-tick-dot"></span></div>
                     </div>
                 </div>
-                <div class="flex justify-between text-[11px] font-mono text-graphite-400">
+                <div class="flex justify-between text-[11px] font-mono text-slate-300">
                     <span>1: Easy & Chill (швидкий старт)</span>
                     <span>10: Hardcore CS & Deep Math</span>
                 </div>
             </div>
 
-            <div class="slider-group space-y-1.5" data-slider-id="slider_financial_vector">
+            <div class="slider-group space-y-2" data-slider-id="slider_financial_vector">
                 <div class="flex justify-between items-center text-xs sm:text-sm">
-                    <span class="font-medium text-graphite-100">2. Фінансовий вектор та стеля заробітку</span>
-                    <span id="val_financial_vector" class="noble-val-badge font-mono font-semibold text-cherry-300 bg-cherry-950/90 border border-cherry-800/70 px-2.5 py-0.5 rounded text-xs">
+                    <span class="font-semibold text-white">2. Фінансовий вектор та стеля заробітку</span>
+                    <span id="val_financial_vector" class="noble-val-badge font-mono font-semibold px-2.5 py-0.5 rounded-lg text-xs">
                         7.0 / 10
                     </span>
                 </div>
@@ -127,16 +130,16 @@
                         <div class="slider-tick" data-val="10"><span class="slider-tick-dot"></span></div>
                     </div>
                 </div>
-                <div class="flex justify-between text-[11px] font-mono text-graphite-400">
+                <div class="flex justify-between text-[11px] font-mono text-slate-300">
                     <span>1: Стабільна середня база</span>
                     <span>10: High Senior Cap & Global Market</span>
                 </div>
             </div>
 
-            <div class="slider-group space-y-1.5" data-slider-id="slider_architecture_visual">
+            <div class="slider-group space-y-2" data-slider-id="slider_architecture_visual">
                 <div class="flex justify-between items-center text-xs sm:text-sm">
-                    <span class="font-medium text-graphite-100">3. Архітектура & Логіка vs Візуал & UI</span>
-                    <span id="val_architecture_visual" class="noble-val-badge font-mono font-semibold text-cherry-300 bg-cherry-950/90 border border-cherry-800/70 px-2.5 py-0.5 rounded text-xs">
+                    <span class="font-semibold text-white">3. Архітектура & Логіка vs Візуал & UI</span>
+                    <span id="val_architecture_visual" class="noble-val-badge font-mono font-semibold px-2.5 py-0.5 rounded-lg text-xs">
                         5.0 / 10
                     </span>
                 </div>
@@ -155,16 +158,16 @@
                         <div class="slider-tick" data-val="10"><span class="slider-tick-dot"></span></div>
                     </div>
                 </div>
-                <div class="flex justify-between text-[11px] font-mono text-graphite-400">
+                <div class="flex justify-between text-[11px] font-mono text-slate-300">
                     <span>1: Low-level / Серверний бекенд</span>
                     <span>10: UI/UX & Візуальні інтерфейси</span>
                 </div>
             </div>
 
-            <div class="slider-group space-y-1.5" data-slider-id="slider_company_scale">
+            <div class="slider-group space-y-2" data-slider-id="slider_company_scale">
                 <div class="flex justify-between items-center text-xs sm:text-sm">
-                    <span class="font-medium text-graphite-100">4. Масштаб компаній та культура процесів</span>
-                    <span id="val_company_scale" class="noble-val-badge font-mono font-semibold text-cherry-300 bg-cherry-950/90 border border-cherry-800/70 px-2.5 py-0.5 rounded text-xs">
+                    <span class="font-semibold text-white">4. Масштаб компаній та культура процесів</span>
+                    <span id="val_company_scale" class="noble-val-badge font-mono font-semibold px-2.5 py-0.5 rounded-lg text-xs">
                         6.0 / 10
                     </span>
                 </div>
@@ -183,16 +186,16 @@
                         <div class="slider-tick" data-val="10"><span class="slider-tick-dot"></span></div>
                     </div>
                 </div>
-                <div class="flex justify-between text-[11px] font-mono text-graphite-400">
+                <div class="flex justify-between text-[11px] font-mono text-slate-300">
                     <span>1: Big Enterprise & Чіткі процеси</span>
                     <span>10: Startups & Повна свобода</span>
                 </div>
             </div>
 
-            <div class="slider-group space-y-1.5" data-slider-id="slider_stress_wlb">
+            <div class="slider-group space-y-2" data-slider-id="slider_stress_wlb">
                 <div class="flex justify-between items-center text-xs sm:text-sm">
-                    <span class="font-medium text-graphite-100">5. Рівень стресу та Work-Life Balance</span>
-                    <span id="val_stress_wlb" class="noble-val-badge font-mono font-semibold text-cherry-300 bg-cherry-950/90 border border-cherry-800/70 px-2.5 py-0.5 rounded text-xs">
+                    <span class="font-semibold text-white">5. Рівень стресу та Work-Life Balance</span>
+                    <span id="val_stress_wlb" class="noble-val-badge font-mono font-semibold px-2.5 py-0.5 rounded-lg text-xs">
                         5.0 / 10
                     </span>
                 </div>
@@ -211,153 +214,155 @@
                         <div class="slider-tick" data-val="10"><span class="slider-tick-dot"></span></div>
                     </div>
                 </div>
-                <div class="flex justify-between text-[11px] font-mono text-graphite-400">
+                <div class="flex justify-between text-[11px] font-mono text-slate-300">
                     <span>1: Balanced & Спокійний графік</span>
                     <span>10: High Challenge & On-Call драйв</span>
                 </div>
             </div>
 
-            <div class="pt-2 text-xs text-graphite-400 font-mono flex items-center justify-between border-t border-graphite-700/60">
+            <div class="pt-3 text-xs text-pink-300/80 font-mono flex items-center justify-between border-t border-white/10">
                 <span>Математична модель: Weighted Euclidean DSS</span>
-                <span id="statusIndicator" class="text-graphite-300 flex items-center space-x-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-cherry-500"></span>
+                <span id="statusIndicator" class="text-pink-200 flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                     <span>Синхронізовано</span>
                 </span>
             </div>
         </div>
 
-        <div class="lg:col-span-5 bg-graphite-850/85 rounded-2xl p-6 sm:p-7 border border-graphite-700/70 shadow-graphite-card flex flex-col justify-between">
-            <div class="border-b border-graphite-700/60 pb-3 mb-2 flex items-center justify-between">
+        <div class="lg:col-span-5 glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+            <div class="border-b border-white/10 pb-4 mb-2 flex items-center justify-between">
                 <div>
-                    <h2 class="text-base font-semibold text-white">
+                    <h2 class="text-lg font-bold text-white">
                         Радар пріоритетів
                     </h2>
-                    <p class="text-xs text-graphite-400 font-mono">Градація за осями: 1 – 10</p>
+                    <p class="text-xs text-pink-300/80 font-mono">Градація за осями: 1 – 10</p>
                 </div>
-                <span class="px-2 py-0.5 text-[11px] font-mono bg-cherry-950/70 text-cherry-300 border border-cherry-800/60 rounded">
+                <span class="px-3 py-1 text-xs font-mono bg-gradient-to-r from-fuchsia-600/30 to-rose-600/30 text-pink-200 border border-pink-500/40 rounded-full">
                     Шкала 0 – 10
                 </span>
             </div>
 
-            <div class="relative w-full aspect-square max-h-[360px] flex items-center justify-center py-2">
+            <div class="relative w-full aspect-square max-h-[370px] flex items-center justify-center py-2">
                 <canvas id="priorityRadarChart"></canvas>
             </div>
 
-            <div class="mt-2 pt-3 border-t border-graphite-700/60 rounded-xl p-3 bg-graphite-900/60 text-xs font-mono text-graphite-400 space-y-1">
+            <div class="mt-4 pt-3 border-t border-white/10 rounded-2xl p-4 bg-black/25 text-xs font-mono text-slate-300 space-y-2">
                 <div class="flex justify-between items-center">
                     <span>Обраний ринок праці:</span>
-                    <strong id="radarRegionBadge" class="text-graphite-200">{{ current_region|upper }}</strong>
+                    <strong id="radarRegionBadge" class="text-white">{{ current_region|upper }}</strong>
                 </div>
                 <div class="flex justify-between items-center">
                     <span>Топ збіг алгоритму:</span>
-                    <strong id="liveTopMatchName" class="text-cherry-400 font-sans font-medium">Розрахунок...</strong>
+                    <strong id="liveTopMatchName" class="gradient-text-retro font-sans font-bold">Розрахунок...</strong>
                 </div>
             </div>
         </div>
 
     </section>
 
-    <section id="matches-section" class="space-y-4 pt-2">
+    <section id="matches-section" class="space-y-5 pt-4">
         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-                <h2 class="text-xl sm:text-2xl font-bold text-white">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-white">
                     Топ-3 відповідні напрямки
                 </h2>
-                <p class="text-xs sm:text-sm text-graphite-400 mt-1">
-                    Відсортовано за формулою схожості векторів. Зарплати вказані для: <span id="labelCurrentRegion" class="text-cherry-300 font-semibold">{{ regions[current_region].name }}</span>
+                <p class="text-xs sm:text-sm text-slate-300 mt-1">
+                    {% with cur_reg=regions|get_item:current_region %}
+                    Відсортовано за формулою схожості векторів. Зарплати вказані для: <span id="labelCurrentRegion" class="text-sunset-orange font-bold">{{ cur_reg.name }}</span>
+                    {% endwith %}
                 </p>
             </div>
             
-            <div class="flex items-center space-x-2 text-xs font-mono text-graphite-400 bg-graphite-850 px-3 py-1.5 rounded-lg border border-graphite-700/80">
-                <span>Каталог: <strong>{{ tracks_count }} треків</strong></span>
+            <div class="flex items-center space-x-2 text-xs font-mono text-pink-200 bg-white/10 px-4 py-2 rounded-xl border border-white/15 backdrop-blur-md">
+                <span>Каталог: <strong class="text-white">{{ tracks_count }} треків</strong></span>
                 <span>•</span>
-                <span class="text-cherry-400">DSS 100% Ready</span>
+                <span class="text-sunset-orange font-bold">DSS Ready</span>
             </div>
         </div>
 
-        <div id="topMatchesContainer" class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div class="col-span-full py-12 text-center text-graphite-400 font-mono text-xs">
+        <div id="topMatchesContainer" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="col-span-full py-16 text-center text-pink-200 font-mono text-sm">
                 Розрахунок відповідності векторів...
             </div>
         </div>
     </section>
 
-    <section id="trends-section" class="bg-graphite-850/85 rounded-2xl p-6 sm:p-8 border border-graphite-700/70 shadow-graphite-card space-y-5">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-graphite-700/60 pb-4">
+    <section id="trends-section" class="glass-panel rounded-3xl p-6 sm:p-10 space-y-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-5">
             <div>
-                <h2 class="text-lg font-semibold text-white">
-                    Аналітика ринку праці (<span id="trendRegionName">{{ regions[current_region].name }}</span>)
+                <h2 class="text-xl font-bold text-white">
+                    Аналітика ринку праці (<span id="trendRegionName" class="gradient-text-retro">{{ current_region|upper }}</span>)
                 </h2>
-                <p class="text-xs text-graphite-400 mt-0.5">
+                <p class="text-xs sm:text-sm text-slate-300 mt-0.5">
                     Дані затребуваності, частка ремоут-роботи та динаміка попиту
                 </p>
             </div>
             
-            <span class="px-2.5 py-1 bg-graphite-900 border border-graphite-700/80 rounded text-xs font-mono text-graphite-300">
-                Статус: <strong class="text-cherry-400">Локальний кеш активний</strong>
+            <span class="px-3.5 py-1.5 bg-white/10 border border-white/15 rounded-full text-xs font-mono text-pink-200">
+                Статус: <strong class="text-sunset-orange">Кеш активний</strong>
             </span>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             
-            <div class="bg-graphite-900/60 rounded-xl p-4 border border-graphite-700/60">
-                <span class="text-[11px] font-mono uppercase text-graphite-400">Активні вакансії</span>
-                <div id="trendVacancies" class="text-2xl font-bold text-white mt-1 font-mono">
+            <div class="bg-black/30 rounded-2xl p-5 border border-white/10">
+                <span class="text-[11px] font-mono uppercase text-pink-300/80">Активні вакансії</span>
+                <div id="trendVacancies" class="text-3xl font-extrabold text-white mt-2 font-mono">
                     {{ market_trends.active_vacancies }}
                 </div>
-                <p class="text-xs text-cherry-400 font-mono mt-1">
+                <p class="text-xs text-sunset-orange font-mono mt-1.5">
                     ↑ {{ market_trends.avg_growth }} річна динаміка
                 </p>
             </div>
 
-            <div class="bg-graphite-900/60 rounded-xl p-4 border border-graphite-700/60">
-                <span class="text-[11px] font-mono uppercase text-graphite-400">Індекс попиту (1-100)</span>
-                <div id="trendDemandIndex" class="text-2xl font-bold text-cherry-400 mt-1 font-mono">
+            <div class="bg-black/30 rounded-2xl p-5 border border-white/10">
+                <span class="text-[11px] font-mono uppercase text-pink-300/80">Індекс попиту (1-100)</span>
+                <div id="trendDemandIndex" class="text-3xl font-extrabold text-sunset-orange mt-2 font-mono">
                     {{ market_trends.demand_index }} / 100
                 </div>
-                <div class="w-full bg-graphite-700 h-1.5 rounded-full mt-2 overflow-hidden">
-                    <div id="trendDemandBar" class="bg-cherry-600 h-full rounded-full transition-all duration-300" style="width: {{ market_trends.demand_index }}%;"></div>
+                <div class="w-full bg-white/10 h-2 rounded-full mt-3 overflow-hidden">
+                    <div id="trendDemandBar" class="bg-gradient-to-r from-fuchsia-500 via-rose-500 to-amber-500 h-full rounded-full transition-all duration-300" style="width: {{ market_trends.demand_index }}%;"></div>
                 </div>
             </div>
 
-            <div class="bg-graphite-900/60 rounded-xl p-4 border border-graphite-700/60">
-                <span class="text-[11px] font-mono uppercase text-graphite-400">Частка Remote-позицій</span>
-                <div id="trendRemoteShare" class="text-2xl font-bold text-graphite-200 mt-1 font-mono">
+            <div class="bg-black/30 rounded-2xl p-5 border border-white/10">
+                <span class="text-[11px] font-mono uppercase text-pink-300/80">Частка Remote-позицій</span>
+                <div id="trendRemoteShare" class="text-3xl font-extrabold text-white mt-2 font-mono">
                     {{ market_trends.remote_share }}
                 </div>
-                <p class="text-xs text-graphite-400 mt-1">
+                <p class="text-xs text-slate-300 mt-1.5">
                     Глобальні команди
                 </p>
             </div>
 
-            <div class="bg-graphite-900/60 rounded-xl p-4 border border-graphite-700/60">
-                <span class="text-[11px] font-mono uppercase text-graphite-400">Ключова компетенція</span>
-                <div id="trendHotSkill" class="text-sm font-semibold text-graphite-100 mt-1 leading-snug">
+            <div class="bg-black/30 rounded-2xl p-5 border border-white/10">
+                <span class="text-[11px] font-mono uppercase text-pink-300/80">Ключова компетенція</span>
+                <div id="trendHotSkill" class="text-base font-bold text-white mt-2 leading-snug">
                     {{ market_trends.hot_skill }}
                 </div>
-                <p class="text-xs text-graphite-400 mt-1">
+                <p class="text-xs text-pink-300/80 mt-1.5">
                     Швидкий приріст пропозицій
                 </p>
             </div>
 
         </div>
 
-        <div class="bg-graphite-900/50 rounded-xl p-4 border border-graphite-700/60 text-xs text-graphite-300 leading-relaxed">
-            <strong class="text-white">Сентимент ринку:</strong> 
+        <div class="bg-black/25 rounded-2xl p-5 border border-white/10 text-xs text-slate-200 leading-relaxed">
+            <strong class="text-white font-semibold">Сентимент ринку:</strong> 
             <span id="trendSentiment">{{ market_trends.market_sentiment }}</span>
         </div>
 
     </section>
 
-    <section class="text-center py-4">
-        <button id="toggleAllTracksBtn" class="px-4 py-2 rounded-lg bg-graphite-800 hover:bg-graphite-700 text-graphite-200 text-xs font-mono font-medium border border-graphite-600/70 hover:border-cherry-600/60 transition-all inline-flex items-center space-x-2 shadow-sm">
+    <section class="text-center py-6">
+        <button id="toggleAllTracksBtn" class="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-mono font-semibold border border-white/15 hover:border-pink-500/50 transition-all inline-flex items-center space-x-2.5 shadow-lg backdrop-blur-md">
             <span>Розгорнути повний каталог (10 напрямів)</span>
-            <svg id="allTracksArrow" class="w-3.5 h-3.5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg id="allTracksArrow" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
         </button>
 
-        <div id="allTracksGrid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left mt-6">
+        <div id="allTracksGrid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-left mt-8">
         </div>
     </section>
 

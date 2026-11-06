@@ -55,26 +55,26 @@ function setupRadarChart() {
                 {
                     label: 'Ваш вектор пріоритетів',
                     data: initialValues,
-                    backgroundColor: 'rgba(190, 18, 60, 0.28)',
-                    borderColor: '#be123c',
-                    pointBackgroundColor: '#fb7185',
-                    pointBorderColor: '#0b0d12',
+                    backgroundColor: 'rgba(236, 72, 153, 0.28)',
+                    borderColor: '#ec4899',
+                    pointBackgroundColor: '#ff5e62',
+                    pointBorderColor: '#12072b',
                     pointHoverBackgroundColor: '#ffffff',
-                    pointHoverBorderColor: '#e11d48',
+                    pointHoverBorderColor: '#ff5e62',
                     pointRadius: 4.5,
-                    pointHoverRadius: 6.5,
-                    borderWidth: 2.2
+                    pointHoverRadius: 7,
+                    borderWidth: 2.4
                 },
                 {
                     label: 'Еталон Топ-1 треку',
                     data: [5, 5, 5, 5, 5],
-                    backgroundColor: 'rgba(148, 163, 184, 0.08)',
-                    borderColor: 'rgba(148, 163, 184, 0.55)',
+                    backgroundColor: 'rgba(168, 85, 247, 0.12)',
+                    borderColor: 'rgba(168, 85, 247, 0.75)',
                     borderDash: [4, 4],
-                    pointBackgroundColor: '#94a3b8',
-                    pointBorderColor: '#0b0d12',
-                    pointRadius: 3,
-                    borderWidth: 1.5,
+                    pointBackgroundColor: '#c084fc',
+                    pointBorderColor: '#12072b',
+                    pointRadius: 3.5,
+                    borderWidth: 1.8,
                     hidden: false
                 }
             ]
@@ -89,7 +89,7 @@ function setupRadarChart() {
                 legend: {
                     position: 'bottom',
                     labels: {
-                        color: '#9fa5b4',
+                        color: '#c4b5fd',
                         font: {
                             family: "'Inter', sans-serif",
                             size: 11
@@ -99,12 +99,12 @@ function setupRadarChart() {
                     }
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(16, 19, 26, 0.96)',
-                    titleColor: '#fda4af',
-                    bodyColor: '#e4e6ea',
-                    borderColor: '#2b2f3a',
+                    backgroundColor: 'rgba(20, 8, 38, 0.95)',
+                    titleColor: '#ff9966',
+                    bodyColor: '#f1f5f9',
+                    borderColor: 'rgba(236, 72, 153, 0.4)',
                     borderWidth: 1,
-                    padding: 9,
+                    padding: 10,
                     bodyFont: { family: "'JetBrains Mono', monospace" }
                 }
             },
@@ -116,7 +116,7 @@ function setupRadarChart() {
                     ticks: {
                         stepSize: 2,
                         display: true,
-                        color: '#757c8e',
+                        color: '#a78bfa',
                         backdropColor: 'transparent',
                         font: {
                             family: "'JetBrains Mono', monospace",
@@ -127,17 +127,17 @@ function setupRadarChart() {
                     },
                     angleLines: {
                         display: true,
-                        color: 'rgba(255, 255, 255, 0.08)',
+                        color: 'rgba(255, 255, 255, 0.12)',
                         lineWidth: 1
                     },
                     grid: {
                         display: true,
-                        color: 'rgba(255, 255, 255, 0.08)',
+                        color: 'rgba(255, 255, 255, 0.12)',
                         circular: false,
                         lineWidth: 1
                     },
                     pointLabels: {
-                        color: '#e4e6ea',
+                        color: '#e2e8f0',
                         font: {
                             family: "'Inter', sans-serif",
                             size: 11,
@@ -155,7 +155,7 @@ function updateSliderTrack(slider, valEl) {
     const val = parseFloat(slider.value);
     const percent = ((val - 1) / (10 - 1)) * 100;
     
-    slider.style.background = `linear-gradient(to right, #9f1239 0%, #be123c ${Math.max(0, percent - 5)}%, #e11d48 ${percent}%, #1a1e28 ${percent}%, #1a1e28 100%)`;
+    slider.style.background = `linear-gradient(to right, #8b5cf6 0%, #ec4899 ${Math.max(0, percent * 0.55)}%, #ff5e62 ${percent}%, #1e0e37 ${percent}%, #1e0e37 100%)`;
     
     if (valEl) {
         valEl.textContent = val.toFixed(1) + ' / 10';
@@ -235,8 +235,8 @@ function debounceMatchCalculation() {
     const indicator = document.getElementById('statusIndicator');
     if (indicator) {
         indicator.innerHTML = `
-            <span class="w-1.5 h-1.5 rounded-full bg-cherry-400"></span>
-            <span class="text-graphite-400">Розрахунок...</span>
+            <span class="w-2 h-2 rounded-full bg-sunset-orange animate-ping"></span>
+            <span class="text-pink-300">Розрахунок...</span>
         `;
     }
 
@@ -265,7 +265,7 @@ async function triggerMatchCalculation() {
     const region = getSelectedRegion();
 
     try {
-        const response = await fetch('/api/match', {
+        const response = await fetch('/api/match/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -288,8 +288,8 @@ async function triggerMatchCalculation() {
         const indicator = document.getElementById('statusIndicator');
         if (indicator) {
             indicator.innerHTML = `
-                <span class="w-1.5 h-1.5 rounded-full bg-cherry-500"></span>
-                <span class="text-graphite-300">Синхронізовано</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span class="text-pink-200">Синхронізовано</span>
             `;
         }
     } catch (err) {
@@ -345,22 +345,22 @@ function renderMatches(data) {
     matches.forEach((item, index) => {
         const rankConfigs = [
             {
-                badgeClass: 'bg-cherry-950/90 text-cherry-300 border border-cherry-800/70',
+                badgeClass: 'bg-gradient-to-r from-fuchsia-600 to-rose-600 text-white shadow-md border border-fuchsia-400/40',
                 badgeText: '#1 Рекомендовано',
-                matchColor: 'text-cherry-400',
-                btnClass: 'bg-cherry-700 hover:bg-cherry-600 text-white shadow-sm'
+                matchColor: 'gradient-text-retro',
+                btnClass: 'btn-retro-gradient'
             },
             {
-                badgeClass: 'bg-graphite-800 text-graphite-300 border border-graphite-600/70',
+                badgeClass: 'bg-white/10 text-pink-200 border border-white/15',
                 badgeText: '#2 Альтернатива',
-                matchColor: 'text-graphite-200',
-                btnClass: 'bg-graphite-800 hover:bg-graphite-700 text-graphite-200 border border-graphite-600/70 hover:border-cherry-600/50'
+                matchColor: 'text-violet-200',
+                btnClass: 'bg-white/10 hover:bg-white/15 text-pink-100 border border-white/15 hover:border-pink-500/50'
             },
             {
-                badgeClass: 'bg-graphite-800 text-graphite-300 border border-graphite-600/70',
+                badgeClass: 'bg-white/10 text-pink-200 border border-white/15',
                 badgeText: '#3 Перспектива',
-                matchColor: 'text-graphite-200',
-                btnClass: 'bg-graphite-800 hover:bg-graphite-700 text-graphite-200 border border-graphite-600/70 hover:border-cherry-600/50'
+                matchColor: 'text-violet-200',
+                btnClass: 'bg-white/10 hover:bg-white/15 text-pink-100 border border-white/15 hover:border-pink-500/50'
             }
         ];
 
@@ -372,7 +372,7 @@ function renderMatches(data) {
             <div class="relative rounded-2xl p-6 ${cardClass} flex flex-col justify-between transition-all duration-200">
                 <div>
                     <div class="flex items-start justify-between gap-3 mb-3">
-                        <span class="text-[11px] font-mono font-medium px-2 py-0.5 rounded-md ${cfg.badgeClass}">
+                        <span class="text-[11px] font-mono font-medium px-2.5 py-1 rounded-md ${cfg.badgeClass}">
                             ${cfg.badgeText}
                         </span>
                         
@@ -380,44 +380,44 @@ function renderMatches(data) {
                             <span class="text-2xl font-bold font-mono ${cfg.matchColor}">
                                 ${item.match_percentage}%
                             </span>
-                            <span class="block text-[10px] text-graphite-400 font-mono">сумісність</span>
+                            <span class="block text-[10px] text-pink-300/70 font-mono">сумісність</span>
                         </div>
                     </div>
 
                     <h3 class="text-lg font-bold text-white mb-0.5">
                         ${item.title}
                     </h3>
-                    <p class="text-xs text-graphite-400 font-mono mb-3">
-                        Категорія: <span class="text-graphite-300">${item.category}</span>
+                    <p class="text-xs text-pink-300/70 font-mono mb-3">
+                        Категорія: <span class="text-pink-100">${item.category}</span>
                     </p>
 
-                    <div class="bg-graphite-900/60 rounded-lg p-3 border border-graphite-700/60 text-xs text-graphite-300 mb-3 space-y-1">
-                        <strong class="text-cherry-300 block font-mono text-[11px] uppercase">Чому цей трек:</strong>
-                        ${item.match_reasons.map(r => `<p class="leading-relaxed text-graphite-300">• ${r}</p>`).join('')}
+                    <div class="bg-black/30 rounded-xl p-3 border border-white/10 text-xs text-slate-200 mb-3 space-y-1">
+                        <strong class="text-sunset-orange block font-mono text-[11px] uppercase">Чому цей трек:</strong>
+                        ${item.match_reasons.map(r => `<p class="leading-relaxed text-slate-200">• ${r}</p>`).join('')}
                     </div>
 
-                    <div class="bg-graphite-900/60 rounded-lg p-3 border border-graphite-700/60 mb-4">
-                        <span class="text-[10px] font-mono uppercase text-graphite-400 block mb-1">
+                    <div class="bg-black/30 rounded-xl p-3 border border-white/10 mb-4">
+                        <span class="text-[10px] font-mono uppercase text-pink-300/70 block mb-1">
                             Зарплата (${region.toUpperCase()}):
                         </span>
                         <div class="flex justify-between items-center text-xs font-mono">
-                            <span class="text-graphite-400">Junior: <strong class="text-graphite-200">${salary.junior || 'N/A'}</strong></span>
-                            <span class="text-graphite-400">Senior: <strong class="text-cherry-400 font-semibold">${salary.senior || 'N/A'}</strong></span>
+                            <span class="text-slate-300">Junior: <strong class="text-white">${salary.junior || 'N/A'}</strong></span>
+                            <span class="text-slate-300">Senior: <strong class="text-sunset-orange font-semibold">${salary.senior || 'N/A'}</strong></span>
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap gap-1 mb-5">
+                    <div class="flex flex-wrap gap-1.5 mb-5">
                         ${item.tech_stack.slice(0, 5).map(tech => `
-                            <span class="px-2 py-0.5 rounded bg-graphite-900 text-graphite-300 text-[11px] font-mono border border-graphite-700/70">
+                            <span class="px-2 py-0.5 rounded-md bg-white/5 text-pink-200 text-[11px] font-mono border border-white/10">
                                 ${tech}
                             </span>
                         `).join('')}
-                        ${item.tech_stack.length > 5 ? `<span class="px-1.5 py-0.5 text-[10px] font-mono text-graphite-400">+${item.tech_stack.length - 5}</span>` : ''}
+                        ${item.tech_stack.length > 5 ? `<span class="px-1.5 py-0.5 text-[10px] font-mono text-pink-300/70">+${item.tech_stack.length - 5}</span>` : ''}
                     </div>
                 </div>
 
-                <a href="/career/${item.slug}?${queryParams}" 
-                   class="w-full text-center py-2.5 px-4 rounded-lg text-xs font-mono font-medium ${cfg.btnClass} transition-colors flex items-center justify-center space-x-2">
+                <a href="/career/${item.slug}/?${queryParams}" 
+                   class="w-full text-center py-2.5 px-4 rounded-xl text-xs font-mono font-medium ${cfg.btnClass} transition-all flex items-center justify-center space-x-2">
                     <span>Дорожня карта & Деталі</span>
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
@@ -438,16 +438,16 @@ function renderFullCatalog(allTracks, queryParams) {
     let html = '';
     allTracks.forEach(track => {
         html += `
-            <div class="bg-graphite-850/85 rounded-xl p-4 border border-graphite-700/70 hover:border-graphite-600 flex flex-col justify-between">
+            <div class="card-noble rounded-xl p-4 border border-white/10 hover:border-pink-500/40 flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-start mb-2">
-                        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-graphite-800 text-graphite-300">${track.category}</span>
-                        <span class="text-xs font-mono font-semibold text-cherry-400">${track.match_percentage}%</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-pink-200">${track.category}</span>
+                        <span class="text-xs font-mono font-semibold text-sunset-orange">${track.match_percentage}%</span>
                     </div>
                     <h4 class="text-sm font-bold text-white mb-1">${track.title}</h4>
-                    <p class="text-xs text-graphite-400 leading-relaxed mb-3">${track.short_desc}</p>
+                    <p class="text-xs text-slate-300 leading-relaxed mb-3">${track.short_desc}</p>
                 </div>
-                <a href="/career/${track.slug}?${queryParams}" class="text-xs font-mono text-cherry-400 hover:text-cherry-300 font-medium inline-flex items-center space-x-1">
+                <a href="/career/${track.slug}/?${queryParams}" class="text-xs font-mono text-sunset-orange hover:text-pink-300 font-medium inline-flex items-center space-x-1">
                     <span>Детальніше →</span>
                 </a>
             </div>
@@ -589,12 +589,12 @@ function setupDetailRadarChart() {
                 data.radar.company_scale,
                 data.radar.stress_wlb
             ],
-            backgroundColor: 'rgba(190, 18, 60, 0.28)',
-            borderColor: '#be123c',
-            pointBackgroundColor: '#fb7185',
-            pointBorderColor: '#0b0d12',
+            backgroundColor: 'rgba(236, 72, 153, 0.28)',
+            borderColor: '#ec4899',
+            pointBackgroundColor: '#ff5e62',
+            pointBorderColor: '#12072b',
             pointRadius: 4.5,
-            borderWidth: 2.2
+            borderWidth: 2.4
         }
     ];
 
@@ -608,11 +608,11 @@ function setupDetailRadarChart() {
                 data.user_vector.company_scale,
                 data.user_vector.stress_wlb
             ],
-            backgroundColor: 'rgba(16, 185, 129, 0.16)',
+            backgroundColor: 'rgba(16, 185, 129, 0.2)',
             borderColor: '#10b981',
             borderDash: [4, 4],
             pointBackgroundColor: '#34d399',
-            pointBorderColor: '#0b0d12',
+            pointBorderColor: '#12072b',
             pointRadius: 4,
             borderWidth: 2
         });
@@ -637,7 +637,7 @@ function setupDetailRadarChart() {
                 legend: {
                     position: 'bottom',
                     labels: {
-                        color: '#9fa5b4',
+                        color: '#c4b5fd',
                         font: { family: "'Inter', sans-serif", size: 11 },
                         padding: 12
                     }
@@ -651,7 +651,7 @@ function setupDetailRadarChart() {
                     ticks: {
                         stepSize: 2,
                         display: true,
-                        color: '#757c8e',
+                        color: '#a78bfa',
                         backdropColor: 'transparent',
                         font: {
                             family: "'JetBrains Mono', monospace",
@@ -662,17 +662,17 @@ function setupDetailRadarChart() {
                     },
                     angleLines: {
                         display: true,
-                        color: 'rgba(255, 255, 255, 0.08)',
+                        color: 'rgba(255, 255, 255, 0.12)',
                         lineWidth: 1
                     },
                     grid: {
                         display: true,
-                        color: 'rgba(255, 255, 255, 0.08)',
+                        color: 'rgba(255, 255, 255, 0.12)',
                         circular: false,
                         lineWidth: 1
                     },
                     pointLabels: {
-                        color: '#e4e6ea',
+                        color: '#e2e8f0',
                         font: { family: "'Inter', sans-serif", size: 11, weight: '500' },
                         padding: 8
                     }
@@ -691,11 +691,11 @@ function setupSalaryTabs() {
             const targetRegion = btn.dataset.regionTarget;
 
             tabButtons.forEach(b => {
-                b.classList.remove('bg-cherry-700', 'text-white', 'font-medium', 'shadow-sm');
-                b.classList.add('text-graphite-400');
+                b.classList.remove('bg-gradient-to-r', 'from-fuchsia-600', 'to-rose-600', 'text-white', 'font-medium', 'shadow-md');
+                b.classList.add('text-pink-200/70');
             });
-            btn.classList.add('bg-cherry-700', 'text-white', 'font-medium', 'shadow-sm');
-            btn.classList.remove('text-graphite-400');
+            btn.classList.add('bg-gradient-to-r', 'from-fuchsia-600', 'to-rose-600', 'text-white', 'font-medium', 'shadow-md');
+            btn.classList.remove('text-pink-200/70');
 
             salaryBlocks.forEach(block => {
                 if (block.id === `salaryCard_${targetRegion}`) {
