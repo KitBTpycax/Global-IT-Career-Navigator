@@ -3,11 +3,29 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-navigator-retro-futuristic-key-2026'
+env_file = BASE_DIR / '.env'
+if env_file.is_file():
+    with open(env_file, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#') and '=' in line:
+                k, v = line.split('=', 1)
+                os.environ.setdefault(k.strip(), v.strip().strip("'\""))
 
-DEBUG = True
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-navigator-retro-futuristic-key-2026')
 
-ALLOWED_HOSTS = ['*']
+DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
+
+allowed_hosts_env = os.environ.get('ALLOWED_HOSTS', '*')
+if allowed_hosts_env == '*':
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_env.split(',') if h.strip()]
+
+EXTERNAL_MARKET_API_URL = os.environ.get(
+    'EXTERNAL_MARKET_API_URL',
+    'https://remotive.com/api/remote-jobs?limit=50'
+)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
