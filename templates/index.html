@@ -294,33 +294,39 @@
                     Аналітика ринку праці (<span id="trendRegionName" class="gradient-text-retro">{{ current_region|upper }}</span>)
                 </h2>
                 <p class="text-xs sm:text-sm text-slate-300 mt-0.5">
-                    Дані затребуваності, частка ремоут-роботи та динаміка попиту
+                    Глобальний лічильник віддалених вакансій та орієнтовні регіональні показники
                 </p>
             </div>
             
-            <span class="px-3.5 py-1.5 border rounded-full text-xs font-mono {% if market_trends.is_live %}bg-emerald-500/15 border-emerald-500/35 text-emerald-300{% else %}bg-white/10 border-white/15 text-pink-200{% endif %}">
+            <div class="flex flex-wrap items-center gap-2">
                 {% if market_trends.is_live %}
-                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1"></span>Live Market Feed
-                {% else %}
-                    Reference Regional Benchmarks
+                    <a href="{{ market_trends.source_url|default:'https://remotive.com' }}" target="_blank" rel="noopener noreferrer"
+                       class="px-3.5 py-1.5 border rounded-full text-xs font-mono bg-emerald-500/15 border-emerald-500/35 text-emerald-300 hover:bg-emerald-500/25 transition-colors inline-flex items-center">
+                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5"></span>Live Global Counter • Remotive ↗
+                    </a>
                 {% endif %}
-            </span>
+                <span class="px-3.5 py-1.5 border rounded-full text-xs font-mono bg-white/10 border-white/15 text-pink-200">
+                    Регіональні індекси: Reference Benchmarks
+                </span>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             
             <div class="bg-black/30 rounded-2xl p-5 border border-white/10">
-                <span class="text-[11px] font-mono uppercase text-pink-300/80">Активні вакансії</span>
-                <div id="trendVacancies" class="text-3xl font-extrabold text-white mt-2 font-mono">
+                <span class="text-[11px] font-mono uppercase text-pink-300/80">
+                    {% if market_trends.is_live %}Глобальні Remote (Live){% else %}Активні вакансії (Орієнтир){% endif %}
+                </span>
+                <div id="trendVacancies" class="text-2xl sm:text-3xl font-extrabold text-white mt-2 font-mono">
                     {{ market_trends.active_vacancies }}
                 </div>
                 <p class="text-xs text-sunset-orange font-mono mt-1.5">
-                    ↑ {{ market_trends.avg_growth }} річна динаміка
+                    ↑ {{ market_trends.avg_growth }} річна динаміка (орієнтир)
                 </p>
             </div>
 
             <div class="bg-black/30 rounded-2xl p-5 border border-white/10">
-                <span class="text-[11px] font-mono uppercase text-pink-300/80">Індекс попиту (1-100)</span>
+                <span class="text-[11px] font-mono uppercase text-pink-300/80">Індекс попиту • Орієнтир (1-100)</span>
                 <div id="trendDemandIndex" class="text-3xl font-extrabold text-sunset-orange mt-2 font-mono">
                     {{ market_trends.demand_index }} / 100
                 </div>
@@ -330,30 +336,41 @@
             </div>
 
             <div class="bg-black/30 rounded-2xl p-5 border border-white/10">
-                <span class="text-[11px] font-mono uppercase text-pink-300/80">Частка Remote-позицій</span>
+                <span class="text-[11px] font-mono uppercase text-pink-300/80">Частка Remote • Орієнтир</span>
                 <div id="trendRemoteShare" class="text-3xl font-extrabold text-white mt-2 font-mono">
                     {{ market_trends.remote_share }}
                 </div>
                 <p class="text-xs text-slate-300 mt-1.5">
-                    Глобальні команди
+                    Регіональний бенчмарк ({{ current_region|upper }})
                 </p>
             </div>
 
             <div class="bg-black/30 rounded-2xl p-5 border border-white/10">
-                <span class="text-[11px] font-mono uppercase text-pink-300/80">Ключова компетенція</span>
+                <span class="text-[11px] font-mono uppercase text-pink-300/80">
+                    {% if market_trends.is_live %}Топ категорія (Live Feed){% else %}Ключова компетенція (Орієнтир){% endif %}
+                </span>
                 <div id="trendHotSkill" class="text-base font-bold text-white mt-2 leading-snug">
                     {{ market_trends.hot_skill }}
                 </div>
                 <p class="text-xs text-pink-300/80 mt-1.5">
-                    Швидкий приріст пропозицій
+                    {% if market_trends.is_live %}
+                        За даними <a href="{{ market_trends.source_url|default:'https://remotive.com' }}" target="_blank" rel="noopener noreferrer" class="underline hover:text-white">Remotive</a>
+                    {% else %}
+                        Довідковий зріз ринку
+                    {% endif %}
                 </p>
             </div>
 
         </div>
 
-        <div class="bg-black/25 rounded-2xl p-5 border border-white/10 text-xs text-slate-200 leading-relaxed">
-            <strong class="text-white font-semibold">Сентимент ринку:</strong> 
-            <span id="trendSentiment">{{ market_trends.market_sentiment }}</span>
+        <div class="bg-black/25 rounded-2xl p-5 border border-white/10 text-xs text-slate-200 leading-relaxed flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+                <strong class="text-white font-semibold">Сентимент ринку (довідково):</strong> 
+                <span id="trendSentiment">{{ market_trends.market_sentiment }}</span>
+            </div>
+            <span class="text-[11px] font-mono text-slate-400 shrink-0">
+                Джерело live-лічильника: <a href="{{ market_trends.source_url|default:'https://remotive.com' }}" target="_blank" rel="noopener noreferrer" class="text-pink-300 hover:underline">remotive.com</a>
+            </span>
         </div>
 
     </section>

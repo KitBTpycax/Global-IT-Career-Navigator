@@ -355,7 +355,7 @@ class DetailViewTests(TestCase):
 
 
 class MarketCacheTTLTests(TestCase):
-    """Tests for the 6-hour TTL caching behaviour in fetch_market_trends_with_cache."""
+    """Tests for shared 6-hour Remotive TTL cache, Counter category extraction, and failure backoff."""
 
     def setUp(self):
         MarketCache.objects.all().delete()
@@ -364,60 +364,89 @@ class MarketCacheTTLTests(TestCase):
     def test_live_api_called_when_no_cache_exists(self, mock_get):
         mock_resp = MagicMock()
         mock_resp.status_code = 200
-        mock_resp.json.return_value = {'jobs': [{'category': 'DevOps'}]}
+        mock_resp.json.return_value = {
+            'total-job-count': 310,
+            'jobs': [
+                {'category': 'Design'},
+                {'category': 'DevOps / Sysadmin'},
+                {'category': 'DevOps / Sysadmin'},
+            ],
+        }
         mock_get.return_value = mock_resp
-
-        fetch_market_trends_with_cache('global')
-
-        mock_get.assert_called_once()
-
-    @patch('navigator.services.requests.get')
-    def test_api_not_called_within_ttl(self, mock_get):
-        fresh_payload = DEFAULT_MARKET_SNAPSHOT['global'].copy()
-        fresh_payload['is_live'] = True
-
-        MarketCache.objects.create(region='global', payload=fresh_payload)
 
         result = fetch_market_trends_with_cache('global')
 
+        mock_get.assert_called_once()
+        self.assertTrue(result['is_live'])
+        self.assertEqual(result['source_url'], 'https://remotive.com')
+        self.assertEqual(result['hot_skill'], 'DevOps / Sysadmin (Top in Remotive Feed)')
+        self.assertIn('310', result['active_vacancies'])
+
+    @patch('navigator.services.requests.get')
+    def test_shared_global_cache_reused_across_regions_within_ttl(self, mock_get):
+        MarketCache.objects.create(
+            region='remotive_global_feed',
+            payload={
+                'live_count': 250,
+                'top_category': 'Software Development',
+                'is_live': True,
+            },
+        )
+
+        global_res = fetch_market_trends_with_cache('global')
+        ukraine_res = fetch_market_trends_with_cache('ukraine')
+
         mock_get.assert_not_called()
-        self.assertEqual(result['is_live'], True)
+        self.assertTrue(global_res['is_live'])
+        self.assertTrue(ukraine_res['is_live'])
+        self.assertEqual(ukraine_res['hot_skill'], 'Software Development (Top in Remotive Feed)')
+        self.assertEqual(ukraine_res['remote_share'], DEFAULT_MARKET_SNAPSHOT['ukraine']['remote_share'])
 
     @patch('navigator.services.requests.get')
     def test_api_called_when_cache_is_stale(self, mock_get):
-        stale_payload = DEFAULT_MARKET_SNAPSHOT['global'].copy()
-        entry = MarketCache.objects.create(region='global', payload=stale_payload)
+        entry = MarketCache.objects.create(
+            region='remotive_global_feed',
+            payload={'live_count': 100, 'top_category': 'QA', 'is_live': True},
+        )
         stale_time = timezone.now() - timedelta(hours=7)
         MarketCache.objects.filter(pk=entry.pk).update(updated_at=stale_time)
 
         mock_resp = MagicMock()
         mock_resp.status_code = 200
-        mock_resp.json.return_value = {'jobs': [{'category': 'AI'}], 'total-job-count': 42}
+        mock_resp.json.return_value = {'jobs': [{'category': 'AI / ML'}], 'total-job-count': 42}
         mock_get.return_value = mock_resp
 
         result = fetch_market_trends_with_cache('global')
 
         mock_get.assert_called_once()
-        self.assertTrue(result.get('is_live', False))
+        self.assertTrue(result['is_live'])
+        self.assertEqual(result['hot_skill'], 'AI / ML (Top in Remotive Feed)')
 
     @patch('navigator.services.requests.get')
-    def test_fallback_on_api_error_uses_snapshot(self, mock_get):
+    def test_fallback_on_api_error_touches_cache_to_avoid_repeated_timeouts(self, mock_get):
         mock_get.side_effect = Exception('Network timeout')
 
-        result = fetch_market_trends_with_cache('usa')
+        first = fetch_market_trends_with_cache('usa')
+        second = fetch_market_trends_with_cache('ukraine')
 
-        self.assertIn('active_vacancies', result)
-        self.assertIn('demand_index', result)
+        mock_get.assert_called_once()
+        self.assertFalse(first['is_live'])
+        self.assertFalse(second['is_live'])
+        self.assertEqual(first['active_vacancies'], DEFAULT_MARKET_SNAPSHOT['usa']['active_vacancies'])
+        self.assertEqual(second['demand_index'], DEFAULT_MARKET_SNAPSHOT['ukraine']['demand_index'])
 
     @patch('navigator.services.requests.get')
     def test_no_extra_db_writes_on_cache_hit(self, mock_get):
-        fresh_payload = DEFAULT_MARKET_SNAPSHOT['global'].copy()
-        entry = MarketCache.objects.create(region='global', payload=fresh_payload)
+        entry = MarketCache.objects.create(
+            region='remotive_global_feed',
+            payload={'live_count': 180, 'top_category': 'Backend', 'is_live': True},
+        )
         updated_at_before = MarketCache.objects.get(pk=entry.pk).updated_at
 
         fetch_market_trends_with_cache('global')
-        fetch_market_trends_with_cache('global')
+        fetch_market_trends_with_cache('europe')
 
         mock_get.assert_not_called()
         updated_at_after = MarketCache.objects.get(pk=entry.pk).updated_at
         self.assertEqual(updated_at_before, updated_at_after)
+        

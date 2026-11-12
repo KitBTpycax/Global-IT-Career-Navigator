@@ -1,5 +1,6 @@
 import os
 import math
+from collections import Counter
 from datetime import timedelta
 import requests
 from django.utils import timezone
@@ -77,6 +78,8 @@ DEFAULT_MARKET_SNAPSHOT = {
 }
 
 CACHE_TTL_HOURS = 6
+GLOBAL_FEED_CACHE_KEY = 'remotive_global_feed'
+REMOTIVE_ATTRIBUTION_URL = 'https://remotive.com'
 
 AXIS_WEIGHTS = {
     'learning_curve': 1.0,
@@ -90,82 +93,107 @@ MAX_AXIS_DELTA = 9.0  # 10.0 - 1.0 on a [1, 10] scale
 MAX_EUCLIDEAN_DISTANCE = math.sqrt(sum(w * (MAX_AXIS_DELTA ** 2) for w in AXIS_WEIGHTS.values()))
 
 
+def _extract_top_category(jobs):
+    if not jobs or not isinstance(jobs, list):
+        return None
+    categories = [
+        j.get('category').strip()
+        for j in jobs
+        if isinstance(j, dict) and isinstance(j.get('category'), str) and j.get('category').strip()
+    ]
+    if not categories:
+        return None
+    return Counter(categories).most_common(1)[0][0]
+
+
 def fetch_market_trends_with_cache(region='global'):
     if region not in SUPPORTED_REGIONS:
         region = 'global'
 
     now = timezone.now()
-    cached_entry = MarketCache.objects.filter(region=region).first()
+    cached_entry = MarketCache.objects.filter(region=GLOBAL_FEED_CACHE_KEY).first()
+    live_meta = None
 
-    if cached_entry and cached_entry.payload and cached_entry.updated_at:
-        cache_age = now - cached_entry.updated_at
-        if cache_age < timedelta(hours=CACHE_TTL_HOURS):
-            return cached_entry.payload
+    if cached_entry and isinstance(cached_entry.payload, dict) and cached_entry.updated_at:
+        if (now - cached_entry.updated_at) < timedelta(hours=CACHE_TTL_HOURS):
+            live_meta = cached_entry.payload
 
-    external_url = os.environ.get(
-        'EXTERNAL_MARKET_API_URL',
-        'https://remotive.com/api/remote-jobs?limit=50'
-    )
+    if live_meta is None:
+        external_url = os.environ.get(
+            'EXTERNAL_MARKET_API_URL',
+            'https://remotive.com/api/remote-jobs?limit=50'
+        )
+        fetched_ok = False
 
-    live_payload = None
-    if external_url:
-        try:
-            resp = requests.get(
-                external_url,
-                timeout=3.0,
-                headers={'User-Agent': 'IT-Career-Navigator/2.0'}
-            )
-            if resp.status_code == 200:
-                raw_json = resp.json()
-                live_count = 0
-                hot_skill = None
-
-                if 'total-job-count' in raw_json or 'jobs' in raw_json:
-                    live_count = raw_json.get('total-job-count') or len(raw_json.get('jobs', []))
-                    jobs = raw_json.get('jobs', [])
-                    if jobs and isinstance(jobs, list):
-                        categories = [j.get('category') for j in jobs if j.get('category')]
-                        if categories:
-                            hot_skill = f"{categories[0]} (Live Active Feed)"
-                elif 'data' in raw_json and isinstance(raw_json['data'], list):
-                    live_count = len(raw_json['data'])
-
-                benchmark = DEFAULT_MARKET_SNAPSHOT.get(region, DEFAULT_MARKET_SNAPSHOT['global'])
-                live_payload = {
-                    'active_vacancies': f"{live_count:,} live vacancies" if live_count else benchmark['active_vacancies'],
-                    'demand_index': benchmark['demand_index'],
-                    'remote_share': benchmark['remote_share'],
-                    'avg_growth': benchmark['avg_growth'],
-                    'hot_skill': hot_skill or benchmark['hot_skill'],
-                    'market_sentiment': benchmark['market_sentiment'],
-                    'top_hiring_segments': benchmark.get('top_hiring_segments', []),
-                    'is_live': True,
-                    'feed_source': 'Public Tech Jobs Feed (Remotive)',
-                    'feed_status': 'Live Feed Active',
-                    'last_synced_at': now.isoformat(),
-                }
-                MarketCache.objects.update_or_create(
-                    region=region,
-                    defaults={'payload': live_payload}
+        if external_url:
+            try:
+                resp = requests.get(
+                    external_url,
+                    timeout=3.0,
+                    headers={'User-Agent': 'IT-Career-Navigator/2.0'}
                 )
-                return live_payload
-        except Exception:
-            pass
+                if resp.status_code == 200:
+                    raw_json = resp.json()
+                    live_count = 0
+                    top_category = None
 
-    if cached_entry and cached_entry.payload:
-        return cached_entry.payload
+                    if 'total-job-count' in raw_json or 'jobs' in raw_json:
+                        jobs = raw_json.get('jobs', [])
+                        live_count = raw_json.get('total-job-count') or (len(jobs) if isinstance(jobs, list) else 0)
+                        top_category = _extract_top_category(jobs)
+                    elif 'data' in raw_json and isinstance(raw_json['data'], list):
+                        live_count = len(raw_json['data'])
 
-    fallback_data = DEFAULT_MARKET_SNAPSHOT.get(region, DEFAULT_MARKET_SNAPSHOT['global']).copy()
-    fallback_data['is_live'] = False
-    fallback_data['feed_source'] = 'Regional Reference Benchmark'
-    fallback_data['feed_status'] = 'Reference Baseline'
-    fallback_data['last_synced_at'] = now.isoformat()
+                    live_meta = {
+                        'live_count': int(live_count) if live_count else 0,
+                        'top_category': top_category,
+                        'is_live': True,
+                        'last_synced_at': now.isoformat(),
+                    }
+                    fetched_ok = True
+            except Exception:
+                pass
 
-    MarketCache.objects.update_or_create(
-        region=region,
-        defaults={'payload': fallback_data}
-    )
-    return fallback_data
+        if not fetched_ok:
+            prev_payload = cached_entry.payload if (cached_entry and isinstance(cached_entry.payload, dict)) else {}
+            live_meta = {
+                'live_count': prev_payload.get('live_count', 0),
+                'top_category': prev_payload.get('top_category'),
+                'is_live': False,
+                'last_synced_at': now.isoformat(),
+            }
+
+        # Always save/touch updated_at so failed API calls also respect the 6h backoff
+        MarketCache.objects.update_or_create(
+            region=GLOBAL_FEED_CACHE_KEY,
+            defaults={'payload': live_meta}
+        )
+
+    benchmark = DEFAULT_MARKET_SNAPSHOT.get(region, DEFAULT_MARKET_SNAPSHOT['global']).copy()
+    is_live = bool(live_meta.get('is_live'))
+    live_count = live_meta.get('live_count', 0)
+    top_category = live_meta.get('top_category')
+
+    benchmark['is_live'] = is_live
+    benchmark['source_url'] = REMOTIVE_ATTRIBUTION_URL
+    benchmark['last_synced_at'] = live_meta.get('last_synced_at', now.isoformat())
+
+    if live_count:
+        benchmark['live_global_vacancies'] = f"{live_count:,} global remote jobs"
+        if is_live:
+            benchmark['active_vacancies'] = f"{live_count:,} global remote (Remotive)"
+
+    if is_live and top_category:
+        benchmark['hot_skill'] = f"{top_category} (Top in Remotive Feed)"
+
+    if is_live:
+        benchmark['feed_source'] = 'Remotive Global Remote API'
+        benchmark['feed_status'] = 'Live Global Counter + Regional Benchmarks'
+    else:
+        benchmark['feed_source'] = 'Regional Reference Benchmark'
+        benchmark['feed_status'] = 'Reference Baseline'
+
+    return benchmark
 
 
 def parse_and_clamp_axis(value, axis_name):
