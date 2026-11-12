@@ -149,6 +149,7 @@ def fetch_market_trends_with_cache(region='global'):
                         'top_category': top_category,
                         'is_live': True,
                         'last_synced_at': now.isoformat(),
+                        'last_attempt_at': now.isoformat(),
                     }
                     fetched_ok = True
             except Exception:
@@ -160,10 +161,11 @@ def fetch_market_trends_with_cache(region='global'):
                 'live_count': prev_payload.get('live_count', 0),
                 'top_category': prev_payload.get('top_category'),
                 'is_live': False,
-                'last_synced_at': now.isoformat(),
+                'last_synced_at': prev_payload.get('last_synced_at'),
+                'last_attempt_at': now.isoformat(),
             }
 
-        # Always save/touch updated_at so failed API calls also respect the 6h backoff
+        # Touch updated_at even on failure to avoid 3s timeout loops on every request
         MarketCache.objects.update_or_create(
             region=GLOBAL_FEED_CACHE_KEY,
             defaults={'payload': live_meta}
@@ -176,7 +178,8 @@ def fetch_market_trends_with_cache(region='global'):
 
     benchmark['is_live'] = is_live
     benchmark['source_url'] = REMOTIVE_ATTRIBUTION_URL
-    benchmark['last_synced_at'] = live_meta.get('last_synced_at', now.isoformat())
+    benchmark['last_synced_at'] = live_meta.get('last_synced_at')
+    benchmark['last_attempt_at'] = live_meta.get('last_attempt_at', now.isoformat())
 
     if live_count:
         benchmark['live_global_vacancies'] = f"{live_count:,} global remote jobs"

@@ -3,7 +3,7 @@ import math
 from datetime import timedelta
 from unittest.mock import patch, MagicMock
 
-from django.test import TestCase, Client, override_settings
+from django.test import TestCase, Client
 from django.utils import timezone
 
 from navigator.models import CareerTrack, MarketCache
@@ -15,6 +15,21 @@ from navigator.services import (
     parse_and_clamp_axis,
     MAX_EUCLIDEAN_DISTANCE,
 )
+
+
+def _seed_global_feed_cache():
+    return MarketCache.objects.update_or_create(
+        region='remotive_global_feed',
+        defaults={
+            'payload': {
+                'live_count': 250,
+                'top_category': 'Software Development',
+                'is_live': True,
+                'last_synced_at': timezone.now().isoformat(),
+                'last_attempt_at': timezone.now().isoformat(),
+            }
+        },
+    )
 
 
 def _make_track(**kwargs):
@@ -68,7 +83,7 @@ class DSSMatchingTests(TestCase):
     """Tests for the Weighted Euclidean Distance DSS ranking."""
 
     def setUp(self):
-        MarketCache.objects.create(region='global', payload=DEFAULT_MARKET_SNAPSHOT['global'])
+        _seed_global_feed_cache()
 
         self.frontend = _make_track(
             slug='frontend', title='Frontend Dev', category='Frontend',
@@ -154,7 +169,7 @@ class ApiMatchViewTests(TestCase):
     """Tests for /api/match/ hardening: CSRF, validation, and error codes."""
 
     def setUp(self):
-        MarketCache.objects.create(region='global', payload=DEFAULT_MARKET_SNAPSHOT['global'])
+        _seed_global_feed_cache()
         self.track = _make_track()
 
     def _post_json(self, payload, enforce_csrf=False):
@@ -237,7 +252,7 @@ class ApiMatchViewTests(TestCase):
 
 class IndexViewTests(TestCase):
     def setUp(self):
-        MarketCache.objects.create(region='global', payload=DEFAULT_MARKET_SNAPSHOT['global'])
+        _seed_global_feed_cache()
         _make_track()
 
     def test_index_returns_200(self):
@@ -263,7 +278,6 @@ class IndexViewTests(TestCase):
         self.assertIn('financial_vector', parsed)
 
     def test_index_region_filter(self):
-        MarketCache.objects.create(region='usa', payload=DEFAULT_MARKET_SNAPSHOT['usa'])
         response = self.client.get('/?region=usa')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['current_region'], 'usa')
@@ -277,7 +291,7 @@ class DetailViewTests(TestCase):
     """Tests for /career/<slug>/ including json_script float safety."""
 
     def setUp(self):
-        MarketCache.objects.create(region='global', payload=DEFAULT_MARKET_SNAPSHOT['global'])
+        _seed_global_feed_cache()
         self.track = _make_track(
             slug='python-backend',
             title='Python Backend Engineer',
@@ -308,12 +322,12 @@ class DetailViewTests(TestCase):
         self.assertGreater(start, -1, "detail-track-data script tag not found")
 
         tag_start = content.rfind('<script', 0, start)
-        tag_end   = content.find('</script>', start) + len('</script>')
+        tag_end = content.find('</script>', start) + len('</script>')
         script_block = content[tag_start:tag_end]
 
         json_start = script_block.index('>') + 1
-        json_end   = script_block.rindex('<')
-        raw_json   = script_block[json_start:json_end]
+        json_end = script_block.rindex('<')
+        raw_json = script_block[json_start:json_end]
 
         parsed = json.loads(raw_json)
         self.assertIn('radar', parsed)
@@ -326,10 +340,10 @@ class DetailViewTests(TestCase):
         content = response.content.decode('utf-8')
         start = content.find('id="detail-track-data"')
         tag_start = content.rfind('<script', 0, start)
-        tag_end   = content.find('</script>', start) + len('</script>')
+        tag_end = content.find('</script>', start) + len('</script>')
         script_block = content[tag_start:tag_end]
-        json_start   = script_block.index('>') + 1
-        json_end     = script_block.rindex('<')
+        json_start = script_block.index('>') + 1
+        json_end = script_block.rindex('<')
         parsed = json.loads(script_block[json_start:json_end])
         lc = parsed['user_vector']['learning_curve']
         self.assertIsNotNone(lc, "learning_curve should not be null when ?learn=0 is passed")
@@ -340,10 +354,10 @@ class DetailViewTests(TestCase):
         content = response.content.decode('utf-8')
         start = content.find('id="detail-track-data"')
         tag_start = content.rfind('<script', 0, start)
-        tag_end   = content.find('</script>', start) + len('</script>')
+        tag_end = content.find('</script>', start) + len('</script>')
         script_block = content[tag_start:tag_end]
-        json_start   = script_block.index('>') + 1
-        json_end     = script_block.rindex('<')
+        json_start = script_block.index('>') + 1
+        json_end = script_block.rindex('<')
         parsed = json.loads(script_block[json_start:json_end])
         for axis in ('learning_curve', 'financial_vector', 'architecture_visual', 'company_scale', 'stress_wlb'):
             self.assertIsNone(parsed['user_vector'][axis],

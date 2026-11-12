@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
-from navigator.models import CareerTrack, MarketCache
-from navigator.services import DEFAULT_MARKET_SNAPSHOT
+from navigator.models import CareerTrack
 
 class Command(BaseCommand):
     help = 'Seeds the database with balanced IT career tracks and initial regional market benchmarks'
@@ -1063,14 +1062,6 @@ class Command(BaseCommand):
             else:
                 tracks_updated += 1
 
-        caches_count = 0
-        for region_key, payload in DEFAULT_MARKET_SNAPSHOT.items():
-            MarketCache.objects.update_or_create(
-                region=region_key,
-                defaults={'payload': payload}
-            )
-            caches_count += 1
-
         self.stdout.write(self.style.SUCCESS(
-            f"Базу даних успішно наповнено! Створено: {tracks_created}, Оновлено: {tracks_updated} треків. Кеш оновлено для {caches_count} регіонів."
+            f"Базу даних успішно наповнено! Створено: {tracks_created}, Оновлено: {tracks_updated} треків."
         ))
