@@ -279,23 +279,5 @@
 
 </div>
 
-<script>
-    window.DETAIL_TRACK_DATA = {
-        title: "{{ track.title|escapejs }}",
-        radar: {
-            learning_curve: {{ track.radar_learning_curve }},
-            financial_vector: {{ track.radar_financial_vector }},
-            architecture_visual: {{ track.radar_architecture_visual }},
-            company_scale: {{ track.radar_company_scale }},
-            stress_wlb: {{ track.radar_stress_wlb }}
-        },
-        user_vector: {
-            learning_curve: {{ user_params.learning_curve|default:"null" }},
-            financial_vector: {{ user_params.financial_vector|default:"null" }},
-            architecture_visual: {{ user_params.architecture_visual|default:"null" }},
-            company_scale: {{ user_params.company_scale|default:"null" }},
-            stress_wlb: {{ user_params.stress_wlb|default:"null" }}
-        }
-    };
-</script>
+{{ track_data|json_script:"detail-track-data" }}
 {% endblock %}

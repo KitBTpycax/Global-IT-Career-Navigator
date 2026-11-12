@@ -14,14 +14,35 @@ let priorityRadar = null;
 let matchDebounceTimer = null;
 
 const SLIDERS = [
-    { id: 'slider_learning_curve', valId: 'val_learning_curve', key: 'learning_curve', label: 'CS & Теорія' },
-    { id: 'slider_financial_vector', valId: 'val_financial_vector', key: 'financial_vector', label: 'Фінансова стеля' },
+    { id: 'slider_learning_curve',      valId: 'val_learning_curve',      key: 'learning_curve',      label: 'CS & Теорія' },
+    { id: 'slider_financial_vector',    valId: 'val_financial_vector',    key: 'financial_vector',    label: 'Фінансова стеля' },
     { id: 'slider_architecture_visual', valId: 'val_architecture_visual', key: 'architecture_visual', label: 'Візуал / UI-UX' },
-    { id: 'slider_company_scale', valId: 'val_company_scale', key: 'company_scale', label: 'Стартапи vs Корп' },
-    { id: 'slider_stress_wlb', valId: 'val_stress_wlb', key: 'stress_wlb', label: 'Драйв & Стрес' }
+    { id: 'slider_company_scale',       valId: 'val_company_scale',       key: 'company_scale',       label: 'Стартапи vs Корп' },
+    { id: 'slider_stress_wlb',          valId: 'val_stress_wlb',          key: 'stress_wlb',          label: 'Драйв & Стрес' }
 ];
 
+function getCookie(name) {
+    const cookies = document.cookie.split(';');
+    for (const c of cookies) {
+        const [k, v] = c.trim().split('=');
+        if (k === name) return decodeURIComponent(v || '');
+    }
+    return null;
+}
+
 function initNavigatorPage() {
+    const slidersEl = document.getElementById('initial-sliders-data');
+    if (slidersEl) {
+        try {
+            const initial = JSON.parse(slidersEl.textContent);
+            setSliderValue('slider_learning_curve',      'val_learning_curve',      initial.learning_curve      ?? 5.0);
+            setSliderValue('slider_financial_vector',    'val_financial_vector',    initial.financial_vector    ?? 7.0);
+            setSliderValue('slider_architecture_visual', 'val_architecture_visual', initial.architecture_visual ?? 5.0);
+            setSliderValue('slider_company_scale',       'val_company_scale',       initial.company_scale       ?? 6.0);
+            setSliderValue('slider_stress_wlb',          'val_stress_wlb',          initial.stress_wlb          ?? 5.0);
+        } catch (_) {}
+    }
+
     setupRadarChart();
     setupSliderListeners();
     setupPresetButtons();
@@ -82,18 +103,13 @@ function setupRadarChart() {
         options: {
             responsive: true,
             maintainAspectRatio: true,
-            animation: {
-                duration: 250
-            },
+            animation: { duration: 250 },
             plugins: {
                 legend: {
                     position: 'bottom',
                     labels: {
                         color: '#c4b5fd',
-                        font: {
-                            family: "'Inter', sans-serif",
-                            size: 11
-                        },
+                        font: { family: "'Inter', sans-serif", size: 11 },
                         boxWidth: 12,
                         padding: 14
                     }
@@ -118,31 +134,14 @@ function setupRadarChart() {
                         display: true,
                         color: '#a78bfa',
                         backdropColor: 'transparent',
-                        font: {
-                            family: "'JetBrains Mono', monospace",
-                            size: 10,
-                            weight: '500'
-                        },
+                        font: { family: "'JetBrains Mono', monospace", size: 10, weight: '500' },
                         z: 2
                     },
-                    angleLines: {
-                        display: true,
-                        color: 'rgba(255, 255, 255, 0.12)',
-                        lineWidth: 1
-                    },
-                    grid: {
-                        display: true,
-                        color: 'rgba(255, 255, 255, 0.12)',
-                        circular: false,
-                        lineWidth: 1
-                    },
+                    angleLines: { display: true, color: 'rgba(255, 255, 255, 0.12)', lineWidth: 1 },
+                    grid: { display: true, color: 'rgba(255, 255, 255, 0.12)', circular: false, lineWidth: 1 },
                     pointLabels: {
                         color: '#e2e8f0',
-                        font: {
-                            family: "'Inter', sans-serif",
-                            size: 11,
-                            weight: '500'
-                        },
+                        font: { family: "'Inter', sans-serif", size: 11, weight: '500' },
                         padding: 8
                     }
                 }
@@ -154,9 +153,9 @@ function setupRadarChart() {
 function updateSliderTrack(slider, valEl) {
     const val = parseFloat(slider.value);
     const percent = ((val - 1) / (10 - 1)) * 100;
-    
+
     slider.style.background = `linear-gradient(to right, #8b5cf6 0%, #ec4899 ${Math.max(0, percent * 0.55)}%, #ff5e62 ${percent}%, #1e0e37 ${percent}%, #1e0e37 100%)`;
-    
+
     if (valEl) {
         valEl.textContent = val.toFixed(1) + ' / 10';
         valEl.classList.remove('val-pulse');
@@ -168,11 +167,7 @@ function updateSliderTrack(slider, valEl) {
     if (ticksRow) {
         ticksRow.querySelectorAll('.slider-tick').forEach(tick => {
             const tickVal = parseFloat(tick.dataset.val);
-            if (tickVal <= val) {
-                tick.classList.add('active');
-            } else {
-                tick.classList.remove('active');
-            }
+            tick.classList.toggle('active', tickVal <= val);
         });
     }
 }
@@ -180,18 +175,15 @@ function updateSliderTrack(slider, valEl) {
 function initSliderTracks() {
     SLIDERS.forEach(s => {
         const slider = document.getElementById(s.id);
-        const valEl = document.getElementById(s.valId);
-        if (slider) {
-            updateSliderTrack(slider, valEl);
-        }
+        const valEl  = document.getElementById(s.valId);
+        if (slider) updateSliderTrack(slider, valEl);
     });
 }
 
 function setupSliderListeners() {
-    SLIDERS.forEach(slider => {
-        const inputEl = document.getElementById(slider.id);
-        const valEl = document.getElementById(slider.valId);
-
+    SLIDERS.forEach(s => {
+        const inputEl = document.getElementById(s.id);
+        const valEl   = document.getElementById(s.valId);
         if (!inputEl) return;
 
         inputEl.addEventListener('input', (e) => {
@@ -208,7 +200,7 @@ function setupSliderListeners() {
             const sliderId = row.dataset.slider;
             const targetVal = parseFloat(tick.dataset.val);
             const slider = document.getElementById(sliderId);
-            const valEl = document.getElementById(sliderId.replace('slider_', 'val_'));
+            const valEl  = document.getElementById(sliderId.replace('slider_', 'val_'));
             if (slider) {
                 slider.value = targetVal;
                 updateSliderTrack(slider, valEl);
@@ -221,12 +213,10 @@ function setupSliderListeners() {
 
 function updateUserRadarDataset() {
     if (!priorityRadar) return;
-
     const currentValues = SLIDERS.map(s => {
         const el = document.getElementById(s.id);
         return el ? parseFloat(el.value) : 5.0;
     });
-
     priorityRadar.data.datasets[0].data = currentValues;
     priorityRadar.update('none');
 }
@@ -239,11 +229,8 @@ function debounceMatchCalculation() {
             <span class="text-pink-300">Розрахунок...</span>
         `;
     }
-
     clearTimeout(matchDebounceTimer);
-    matchDebounceTimer = setTimeout(() => {
-        triggerMatchCalculation();
-    }, 180);
+    matchDebounceTimer = setTimeout(() => triggerMatchCalculation(), 180);
 }
 
 function getCurrentSliderVector() {
@@ -261,24 +248,21 @@ function getSelectedRegion() {
 }
 
 async function triggerMatchCalculation() {
-    const sliders = getCurrentSliderVector();
-    const region = getSelectedRegion();
+    const sliders    = getCurrentSliderVector();
+    const region     = getSelectedRegion();
+    const csrftoken  = getCookie('csrftoken');
 
     try {
         const response = await fetch('/api/match/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken || ''
             },
-            body: JSON.stringify({
-                sliders: sliders,
-                region: region
-            })
+            body: JSON.stringify({ sliders, region })
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
 
         const data = await response.json();
         renderMatches(data);
@@ -295,32 +279,33 @@ async function triggerMatchCalculation() {
     } catch (err) {
         console.error('Помилка розрахунку матчингу:', err);
         const indicator = document.getElementById('statusIndicator');
-        if (indicator) {
-            indicator.innerHTML = `<span class="text-rose-400">Помилка мережі</span>`;
-        }
+        if (indicator) indicator.innerHTML = `<span class="text-rose-400">Помилка мережі</span>`;
     }
 }
 
 function updateTopTrackRadar(topTrack) {
     if (!priorityRadar || !topTrack) return;
-
     const profile = topTrack.radar_profile;
-    const radarData = [
+    priorityRadar.data.datasets[1].data = [
         profile.learning_curve,
         profile.financial_vector,
         profile.architecture_visual,
         profile.company_scale,
         profile.stress_wlb
     ];
-
-    priorityRadar.data.datasets[1].data = radarData;
     priorityRadar.data.datasets[1].label = `Еталон: ${topTrack.title}`;
     priorityRadar.update();
 
     const topBadge = document.getElementById('liveTopMatchName');
-    if (topBadge) {
-        topBadge.textContent = `${topTrack.title} (${topTrack.match_percentage}%)`;
+    if (topBadge) topBadge.textContent = `${topTrack.title} (${topTrack.match_percentage}%)`;
+}
+
+function _formatSalary(salaryField) {
+    if (!salaryField) return 'N/A';
+    if (typeof salaryField === 'object') {
+        return `${salaryField.min}–${salaryField.max} ${salaryField.currency}`;
     }
+    return String(salaryField);
 }
 
 function renderMatches(data) {
@@ -328,42 +313,22 @@ function renderMatches(data) {
     if (!container) return;
 
     const matches = data.top_matches;
-    const sliders = getCurrentSliderVector();
-    const region = data.region;
+    const sliders  = getCurrentSliderVector();
+    const region   = data.region;
 
     const queryParams = new URLSearchParams({
-        region: region,
-        learn: sliders.learning_curve,
-        fin: sliders.financial_vector,
-        arch: sliders.architecture_visual,
-        scale: sliders.company_scale,
-        stress: sliders.stress_wlb
+        region, learn: sliders.learning_curve, fin: sliders.financial_vector,
+        arch: sliders.architecture_visual, scale: sliders.company_scale, stress: sliders.stress_wlb
     }).toString();
 
+    const rankConfigs = [
+        { badgeClass: 'bg-gradient-to-r from-fuchsia-600 to-rose-600 text-white shadow-md border border-fuchsia-400/40', badgeText: '#1 Рекомендовано', matchColor: 'gradient-text-retro', btnClass: 'btn-retro-gradient' },
+        { badgeClass: 'bg-white/10 text-pink-200 border border-white/15', badgeText: '#2 Альтернатива',   matchColor: 'text-violet-200', btnClass: 'bg-white/10 hover:bg-white/15 text-pink-100 border border-white/15 hover:border-pink-500/50' },
+        { badgeClass: 'bg-white/10 text-pink-200 border border-white/15', badgeText: '#3 Перспектива',    matchColor: 'text-violet-200', btnClass: 'bg-white/10 hover:bg-white/15 text-pink-100 border border-white/15 hover:border-pink-500/50' }
+    ];
+
     let html = '';
-
     matches.forEach((item, index) => {
-        const rankConfigs = [
-            {
-                badgeClass: 'bg-gradient-to-r from-fuchsia-600 to-rose-600 text-white shadow-md border border-fuchsia-400/40',
-                badgeText: '#1 Рекомендовано',
-                matchColor: 'gradient-text-retro',
-                btnClass: 'btn-retro-gradient'
-            },
-            {
-                badgeClass: 'bg-white/10 text-pink-200 border border-white/15',
-                badgeText: '#2 Альтернатива',
-                matchColor: 'text-violet-200',
-                btnClass: 'bg-white/10 hover:bg-white/15 text-pink-100 border border-white/15 hover:border-pink-500/50'
-            },
-            {
-                badgeClass: 'bg-white/10 text-pink-200 border border-white/15',
-                badgeText: '#3 Перспектива',
-                matchColor: 'text-violet-200',
-                btnClass: 'bg-white/10 hover:bg-white/15 text-pink-100 border border-white/15 hover:border-pink-500/50'
-            }
-        ];
-
         const cfg = rankConfigs[index] || rankConfigs[1];
         const salary = item.regional_salary || {};
         const cardClass = index === 0 ? 'card-top-match' : 'card-noble';
@@ -372,51 +337,31 @@ function renderMatches(data) {
             <div class="relative rounded-2xl p-6 ${cardClass} flex flex-col justify-between transition-all duration-200">
                 <div>
                     <div class="flex items-start justify-between gap-3 mb-3">
-                        <span class="text-[11px] font-mono font-medium px-2.5 py-1 rounded-md ${cfg.badgeClass}">
-                            ${cfg.badgeText}
-                        </span>
-                        
+                        <span class="text-[11px] font-mono font-medium px-2.5 py-1 rounded-md ${cfg.badgeClass}">${cfg.badgeText}</span>
                         <div class="text-right">
-                            <span class="text-2xl font-bold font-mono ${cfg.matchColor}">
-                                ${item.match_percentage}%
-                            </span>
+                            <span class="text-2xl font-bold font-mono ${cfg.matchColor}">${item.match_percentage}%</span>
                             <span class="block text-[10px] text-pink-300/70 font-mono">сумісність</span>
                         </div>
                     </div>
-
-                    <h3 class="text-lg font-bold text-white mb-0.5">
-                        ${item.title}
-                    </h3>
-                    <p class="text-xs text-pink-300/70 font-mono mb-3">
-                        Категорія: <span class="text-pink-100">${item.category}</span>
-                    </p>
-
+                    <h3 class="text-lg font-bold text-white mb-0.5">${item.title}</h3>
+                    <p class="text-xs text-pink-300/70 font-mono mb-3">Категорія: <span class="text-pink-100">${item.category}</span></p>
                     <div class="bg-black/30 rounded-xl p-3 border border-white/10 text-xs text-slate-200 mb-3 space-y-1">
                         <strong class="text-sunset-orange block font-mono text-[11px] uppercase">Чому цей трек:</strong>
                         ${item.match_reasons.map(r => `<p class="leading-relaxed text-slate-200">• ${r}</p>`).join('')}
                     </div>
-
                     <div class="bg-black/30 rounded-xl p-3 border border-white/10 mb-4">
-                        <span class="text-[10px] font-mono uppercase text-pink-300/70 block mb-1">
-                            Зарплата (${region.toUpperCase()}):
-                        </span>
+                        <span class="text-[10px] font-mono uppercase text-pink-300/70 block mb-1">Зарплата (${region.toUpperCase()}):</span>
                         <div class="flex justify-between items-center text-xs font-mono">
-                            <span class="text-slate-300">Junior: <strong class="text-white">${salary.junior || 'N/A'}</strong></span>
-                            <span class="text-slate-300">Senior: <strong class="text-sunset-orange font-semibold">${salary.senior || 'N/A'}</strong></span>
+                            <span class="text-slate-300">Junior: <strong class="text-white">${_formatSalary(salary.junior)}</strong></span>
+                            <span class="text-slate-300">Senior: <strong class="text-sunset-orange font-semibold">${_formatSalary(salary.senior)}</strong></span>
                         </div>
                     </div>
-
                     <div class="flex flex-wrap gap-1.5 mb-5">
-                        ${item.tech_stack.slice(0, 5).map(tech => `
-                            <span class="px-2 py-0.5 rounded-md bg-white/5 text-pink-200 text-[11px] font-mono border border-white/10">
-                                ${tech}
-                            </span>
-                        `).join('')}
+                        ${item.tech_stack.slice(0, 5).map(t => `<span class="px-2 py-0.5 rounded-md bg-white/5 text-pink-200 text-[11px] font-mono border border-white/10">${t}</span>`).join('')}
                         ${item.tech_stack.length > 5 ? `<span class="px-1.5 py-0.5 text-[10px] font-mono text-pink-300/70">+${item.tech_stack.length - 5}</span>` : ''}
                     </div>
                 </div>
-
-                <a href="/career/${item.slug}/?${queryParams}" 
+                <a href="/career/${item.slug}/?${queryParams}"
                    class="w-full text-center py-2.5 px-4 rounded-xl text-xs font-mono font-medium ${cfg.btnClass} transition-all flex items-center justify-center space-x-2">
                     <span>Дорожня карта & Деталі</span>
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -459,43 +404,37 @@ function renderFullCatalog(allTracks, queryParams) {
 function updateTrendsSection(trends, region) {
     if (!trends) return;
 
-    const regNameEl = document.getElementById('trendRegionName');
-    const vacEl = document.getElementById('trendVacancies');
-    const demandEl = document.getElementById('trendDemandIndex');
-    const demandBar = document.getElementById('trendDemandBar');
-    const remoteEl = document.getElementById('trendRemoteShare');
-    const skillEl = document.getElementById('trendHotSkill');
-    const sentEl = document.getElementById('trendSentiment');
-    const radarRegBadge = document.getElementById('radarRegionBadge');
-    const labelCurrentRegion = document.getElementById('labelCurrentRegion');
+    const els = {
+        trendRegionName:   document.getElementById('trendRegionName'),
+        trendVacancies:    document.getElementById('trendVacancies'),
+        trendDemandIndex:  document.getElementById('trendDemandIndex'),
+        trendDemandBar:    document.getElementById('trendDemandBar'),
+        trendRemoteShare:  document.getElementById('trendRemoteShare'),
+        trendHotSkill:     document.getElementById('trendHotSkill'),
+        trendSentiment:    document.getElementById('trendSentiment'),
+        radarRegionBadge:  document.getElementById('radarRegionBadge'),
+        labelCurrentRegion:document.getElementById('labelCurrentRegion'),
+    };
 
-    if (regNameEl) regNameEl.textContent = region.toUpperCase();
-    if (vacEl) vacEl.textContent = trends.active_vacancies;
-    if (demandEl) demandEl.textContent = `${trends.demand_index} / 100`;
-    if (demandBar) demandBar.style.width = `${trends.demand_index}%`;
-    if (remoteEl) remoteEl.textContent = trends.remote_share;
-    if (skillEl) skillEl.textContent = trends.hot_skill;
-    if (sentEl) sentEl.textContent = trends.market_sentiment;
-    if (radarRegBadge) radarRegBadge.textContent = region.toUpperCase();
-    if (labelCurrentRegion) labelCurrentRegion.textContent = region.toUpperCase();
+    if (els.trendRegionName)    els.trendRegionName.textContent    = region.toUpperCase();
+    if (els.trendVacancies)     els.trendVacancies.textContent     = trends.active_vacancies;
+    if (els.trendDemandIndex)   els.trendDemandIndex.textContent   = `${trends.demand_index} / 100`;
+    if (els.trendDemandBar)     els.trendDemandBar.style.width     = `${trends.demand_index}%`;
+    if (els.trendRemoteShare)   els.trendRemoteShare.textContent   = trends.remote_share;
+    if (els.trendHotSkill)      els.trendHotSkill.textContent      = trends.hot_skill;
+    if (els.trendSentiment)     els.trendSentiment.textContent     = trends.market_sentiment;
+    if (els.radarRegionBadge)   els.radarRegionBadge.textContent   = region.toUpperCase();
+    if (els.labelCurrentRegion) els.labelCurrentRegion.textContent = region.toUpperCase();
 }
 
 function setupPresetButtons() {
-    const buttons = document.querySelectorAll('.preset-btn');
-    buttons.forEach(btn => {
+    document.querySelectorAll('.preset-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const learn = parseFloat(btn.dataset.learn);
-            const fin = parseFloat(btn.dataset.fin);
-            const arch = parseFloat(btn.dataset.arch);
-            const scale = parseFloat(btn.dataset.scale);
-            const stress = parseFloat(btn.dataset.stress);
-
-            setSliderValue('slider_learning_curve', 'val_learning_curve', learn);
-            setSliderValue('slider_financial_vector', 'val_financial_vector', fin);
-            setSliderValue('slider_architecture_visual', 'val_architecture_visual', arch);
-            setSliderValue('slider_company_scale', 'val_company_scale', scale);
-            setSliderValue('slider_stress_wlb', 'val_stress_wlb', stress);
-
+            setSliderValue('slider_learning_curve',      'val_learning_curve',      parseFloat(btn.dataset.learn));
+            setSliderValue('slider_financial_vector',    'val_financial_vector',    parseFloat(btn.dataset.fin));
+            setSliderValue('slider_architecture_visual', 'val_architecture_visual', parseFloat(btn.dataset.arch));
+            setSliderValue('slider_company_scale',       'val_company_scale',       parseFloat(btn.dataset.scale));
+            setSliderValue('slider_stress_wlb',          'val_stress_wlb',          parseFloat(btn.dataset.stress));
             updateUserRadarDataset();
             triggerMatchCalculation();
         });
@@ -504,7 +443,7 @@ function setupPresetButtons() {
 
 function setSliderValue(sliderId, valId, value) {
     const slider = document.getElementById(sliderId);
-    const valEl = document.getElementById(valId);
+    const valEl  = document.getElementById(valId);
     if (slider) {
         slider.value = value;
         updateSliderTrack(slider, valEl);
@@ -514,24 +453,21 @@ function setSliderValue(sliderId, valId, value) {
 function setupResetButton() {
     const resetBtn = document.getElementById('resetSlidersBtn');
     if (!resetBtn) return;
-
     resetBtn.addEventListener('click', () => {
-        setSliderValue('slider_learning_curve', 'val_learning_curve', 5.0);
-        setSliderValue('slider_financial_vector', 'val_financial_vector', 7.0);
+        setSliderValue('slider_learning_curve',      'val_learning_curve',      5.0);
+        setSliderValue('slider_financial_vector',    'val_financial_vector',    7.0);
         setSliderValue('slider_architecture_visual', 'val_architecture_visual', 5.0);
-        setSliderValue('slider_company_scale', 'val_company_scale', 6.0);
-        setSliderValue('slider_stress_wlb', 'val_stress_wlb', 5.0);
-
+        setSliderValue('slider_company_scale',       'val_company_scale',       6.0);
+        setSliderValue('slider_stress_wlb',          'val_stress_wlb',          5.0);
         updateUserRadarDataset();
         triggerMatchCalculation();
     });
 }
 
 function setupCatalogToggle() {
-    const btn = document.getElementById('toggleAllTracksBtn');
-    const grid = document.getElementById('allTracksGrid');
+    const btn   = document.getElementById('toggleAllTracksBtn');
+    const grid  = document.getElementById('allTracksGrid');
     const arrow = document.getElementById('allTracksArrow');
-
     if (!btn || !grid) return;
 
     btn.addEventListener('click', () => {
@@ -573,10 +509,18 @@ function initDetailPage() {
 }
 
 function setupDetailRadarChart() {
-    const canvas = document.getElementById('detailRadarChart');
-    if (!canvas || !window.DETAIL_TRACK_DATA) return;
+    const canvas   = document.getElementById('detailRadarChart');
+    const scriptEl = document.getElementById('detail-track-data');
+    if (!canvas || !scriptEl) return;
 
-    const data = window.DETAIL_TRACK_DATA;
+    let data;
+    try {
+        data = JSON.parse(scriptEl.textContent);
+    } catch (e) {
+        console.error('Failed to parse detail-track-data:', e);
+        return;
+    }
+
     const ctx = canvas.getContext('2d');
 
     const datasets = [
@@ -621,14 +565,8 @@ function setupDetailRadarChart() {
     new Chart(ctx, {
         type: 'radar',
         data: {
-            labels: [
-                'CS & Теорія',
-                'Фінансова стеля',
-                'Візуал / UI-UX',
-                'Стартапи & Свобода',
-                'Драйв & Стрес'
-            ],
-            datasets: datasets
+            labels: ['CS & Теорія', 'Фінансова стеля', 'Візуал / UI-UX', 'Стартапи & Свобода', 'Драйв & Стрес'],
+            datasets
         },
         options: {
             responsive: true,
@@ -636,11 +574,7 @@ function setupDetailRadarChart() {
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: {
-                        color: '#c4b5fd',
-                        font: { family: "'Inter', sans-serif", size: 11 },
-                        padding: 12
-                    }
+                    labels: { color: '#c4b5fd', font: { family: "'Inter', sans-serif", size: 11 }, padding: 12 }
                 }
             },
             scales: {
@@ -649,28 +583,11 @@ function setupDetailRadarChart() {
                     max: 10,
                     beginAtZero: true,
                     ticks: {
-                        stepSize: 2,
-                        display: true,
-                        color: '#a78bfa',
-                        backdropColor: 'transparent',
-                        font: {
-                            family: "'JetBrains Mono', monospace",
-                            size: 10,
-                            weight: '500'
-                        },
-                        z: 2
+                        stepSize: 2, display: true, color: '#a78bfa', backdropColor: 'transparent',
+                        font: { family: "'JetBrains Mono', monospace", size: 10, weight: '500' }, z: 2
                     },
-                    angleLines: {
-                        display: true,
-                        color: 'rgba(255, 255, 255, 0.12)',
-                        lineWidth: 1
-                    },
-                    grid: {
-                        display: true,
-                        color: 'rgba(255, 255, 255, 0.12)',
-                        circular: false,
-                        lineWidth: 1
-                    },
+                    angleLines: { display: true, color: 'rgba(255, 255, 255, 0.12)', lineWidth: 1 },
+                    grid: { display: true, color: 'rgba(255, 255, 255, 0.12)', circular: false, lineWidth: 1 },
                     pointLabels: {
                         color: '#e2e8f0',
                         font: { family: "'Inter', sans-serif", size: 11, weight: '500' },
@@ -683,13 +600,12 @@ function setupDetailRadarChart() {
 }
 
 function setupSalaryTabs() {
-    const tabButtons = document.querySelectorAll('.salary-tab-btn');
+    const tabButtons  = document.querySelectorAll('.salary-tab-btn');
     const salaryBlocks = document.querySelectorAll('.salary-region-block');
 
     tabButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             const targetRegion = btn.dataset.regionTarget;
-
             tabButtons.forEach(b => {
                 b.classList.remove('bg-gradient-to-r', 'from-fuchsia-600', 'to-rose-600', 'text-white', 'font-medium', 'shadow-md');
                 b.classList.add('text-pink-200/70');
@@ -698,11 +614,7 @@ function setupSalaryTabs() {
             btn.classList.remove('text-pink-200/70');
 
             salaryBlocks.forEach(block => {
-                if (block.id === `salaryCard_${targetRegion}`) {
-                    block.classList.remove('hidden');
-                } else {
-                    block.classList.add('hidden');
-                }
+                block.classList.toggle('hidden', block.id !== `salaryCard_${targetRegion}`);
             });
         });
     });
